@@ -24,31 +24,23 @@
       
     </div>
     <div>
-      <q-tabs inverted color="white" align="justify" class="tabs-utama">
-        <q-tab default name="mails" slot="title" label="Login" />
-        <q-tab name="alarms" slot="title"  label="Register" />
-        <q-tab-pane name="mails" class="error-card shadow-4 bg-white column items-center justify-center no-wrap">
-          <q-field
-            icon="account circle"
-          >
-            <q-input v-model="username" float-label="Username" />
-          </q-field>
+      <div inverted color="white" align="justify" class="login-place error-card shadow-4 bg-white column items-center justify-center no-wrap">
+        <q-field
+          icon="account circle"
+        >
+          <q-input v-model="username" float-label="Username" />
+        </q-field>
 
-          <q-field
-            icon="lock"
-          >
-            <q-input v-model="password" float-label="Password" />
-          </q-field>
+        <q-field
+          icon="lock"
+        >
+          <q-input v-model="password" float-label="Password" />
+        </q-field>
 
-          <q-btn color="primary" class="full-width" v-on:click="login()">
-            Login
-          </q-btn>
-          
-        </q-tab-pane>
-        <q-tab-pane name="alarms" class="error-card shadow-4 bg-white column items-center justify-center no-wrap">
-          Emails tabx
-        </q-tab-pane>
-      </q-tabs>
+        <q-btn color="primary" class="full-width" v-on:click="login()">
+          Login
+        </q-btn>
+      </div>
     </div>
   </div>
   </q-layout>
@@ -68,6 +60,7 @@ import {
   QField,
   QInput
 } from 'quasar'
+import Vue from 'vue'
 
 export default {
   name: 'index',
@@ -95,17 +88,29 @@ export default {
       window.history.go(-1)
     },
     login () {
-      this.$http
-        .post(this.API_URL + 'login', {
-          email: this.username,
-          password: this.password
-        })
-        .then(response => {
-          localStorage.setItem('access_token', response.data.data.api_token)
-          localStorage.setItem('profile', response.data.data)
-          this.$router.push('/')
-        })
-        .catch((err) => console.log(err))
+      this.$router.push('/')
+      // this.$http
+      //   .post(this.API_URL + 'login', {
+      //     email: this.username,
+      //     password: this.password
+      //   })
+      //   .then(response => {
+      //     localStorage.setItem('access_token', response.data.data.api_token)
+      //     localStorage.setItem('profile', response.data.data)
+      //     this.$router.push('/')
+      //   })
+      //   .catch((err) => console.log(err))
+    },
+    test () {
+      navigator.camera.getPicture((imageURI) => {
+        window.alert('Photo URI : ' + imageURI)
+      }, (message) => {
+        window.alert('FAILED : ' + message)
+      }, {
+        quality: 50,
+        destinationType: Vue.cordova.camera.DestinationType.FILE_URI,
+        sourceType: 0
+      })
     }
   }
 }
@@ -133,5 +138,13 @@ export default {
     > i
       font-size 5rem
   .tabs-utama
-    margin-top:-100px
+    margin-top -100px
+  .login-place
+    margin-top -100px
+  .camera
+    i
+      height 70px
+      width 70px
+      font-size 70px
+      margin 0
 </style>

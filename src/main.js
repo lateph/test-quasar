@@ -16,6 +16,7 @@ import Quasar from 'quasar'
 import router from './router'
 import axios from 'axios'
 import VueLazyload from 'vue-lazyload'
+import VueCordova from 'vue-cordova'
 
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
@@ -44,7 +45,14 @@ Vue.mixin({
   }
 })
 
+Vue.use(VueCordova, {
+  optionTestKey: 'optionTestValue'
+})
 Vue.use(VueLazyload)
+
+Vue.cordova.on('deviceready', () => {
+  console.log('Cordova : device is ready !')
+})
 
 Quasar.start(() => {
   /* eslint-disable no-new */
@@ -53,6 +61,8 @@ Quasar.start(() => {
     router,
     render: h => h(require('./App').default),
     created () {
+      console.log(navigator)
+      console.log(Vue.cordova.plugins)
       if (localStorage.getItem('access_token')) {
         this.setHeader()
         router.push('/')
@@ -63,3 +73,10 @@ Quasar.start(() => {
     }
   })
 })
+
+console.log('adsads')
+document.addEventListener('deviceready', onDeviceReady, false)
+function onDeviceReady () {
+  console.log('taek')
+  console.log(navigator.camera)
+}
