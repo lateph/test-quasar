@@ -37,14 +37,44 @@ export default new VueRouter({
       // (need to specify it in layout)
       children: [
         {
-          path: '',
-          component: load('Home')
+          path: 'snyc',
+          component: load('Snyc')
+        },
+        {
+          path: 'audit',
+          component: load('Audit')
+        },
+        {
+          path: '/schedule',
+          component: load('Schedule')
         },
         {
           path: 'profile',
           component: load('Error404')
+        },
+        {
+          path: 'table',
+          component: load('Table')
         }
       ]
+    },
+    {
+      path: '/lilit',
+      // We point it to our component
+      // where we defined our QLayout
+      component: load('Lilit')
+    },
+    {
+      path: '/ihtp',
+      component: load('IdentifikasiHTP')
+    },
+    {
+      path: '/phtp',
+      component: load('PengendalianHTP')
+    },
+    {
+      path: '/sensus',
+      component: load('Sensus')
     },
     {
       path: '/login',

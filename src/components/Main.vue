@@ -26,42 +26,19 @@
       -->
 
       <q-list no-border link inset-delimiter>
-        <q-list-header>Tree Master Data</q-list-header>
-        <q-item @click="launch('http://quasar-framework.org')">
-          <q-item-side icon="dashboard" />
-          <q-item-main label="Block" sublabel="Data Master Area Pohon" />
-        </q-item>
-        <q-item @click="launch('http://forum.quasar-framework.org')">
-          <q-item-side icon="art track" />
-          <q-item-main label="Tree By Block" sublabel="Data Master Pohon" />
-        </q-item>
-        <q-list-header>Schedule and Audit</q-list-header>
-        <q-item @click="launch('https://gitter.im/quasarframework/Lobby')">
-          <q-item-side icon="schedule" />
-          <q-item-main label="Schedule" sublabel="Jadwal pekerja untuk melakukan audit" />
-        </q-item>
-        <q-item @click="launch('https://twitter.com/quasarframework')">
+        <q-list-header>Main Menu</q-list-header>
+        <q-side-link to="/snyc" item>
+          <q-item-side icon="home" />
+          <q-item-main label="Home"  />
+        </q-side-link>
+        <q-side-link to="/audit" item>
           <q-item-side icon="done all" />
-          <q-item-main label="Audit" sublabel="Audit pada pohon" />
-        </q-item>
-        <q-list-header>Report</q-list-header>
-        <q-item @click="launch('https://gitter.im/quasarframework/Lobby')">
-          <q-item-side icon="content cut" />
-          <q-item-main label="Harvesting" />
-        </q-item>
-        <q-item @click="launch('https://twitter.com/quasarframework')">
-          <q-item-side icon="landscape" />
-          <q-item-main label="Plantation" />
-        </q-item>
-        <q-list-header>Other</q-list-header>
-        <q-item @click="launch('https://twitter.com/quasarframework')">
-          <q-item-side icon="sync" />
-          <q-item-main label="Syncronize"/>
-        </q-item>
-        <q-item @click="launch('https://twitter.com/quasarframework')">
-          <q-item-side icon="settings overscan" />
-          <q-item-main label="Scan QR Code"/>
-        </q-item>        
+          <q-item-main label="Audit" sublabel="" />
+        </q-side-link>
+        <q-side-link to="/schedule" item>
+          <q-item-side icon="schedule" />
+          <q-item-main label="Jadwal" sublabel="" />
+        </q-side-link>   
       </q-list>
     </div>
 
@@ -92,7 +69,8 @@ import {
   QItem,
   QItemSide,
   QItemMain,
-  QCard
+  QCard,
+  QSideLink
 } from 'quasar'
 
 export default {
@@ -108,7 +86,8 @@ export default {
     QItem,
     QItemSide,
     QItemMain,
-    QCard
+    QCard,
+    QSideLink
   },
   data () {
     return {

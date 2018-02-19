@@ -1,9 +1,9 @@
 // === DEFAULT / CUSTOM STYLE ===
 // WARNING! always comment out ONE of the two require() calls below.
 // 1. use next line to activate CUSTOM STYLE (./src/themes)
-// require(`./themes/app.${__THEME}.styl`)
+require(`./themes/app.${__THEME}.styl`)
 // 2. or, use next line to activate DEFAULT QUASAR STYLE
-require(`quasar/dist/quasar.${__THEME}.css`)
+// require(`quasar/dist/quasar.${__THEME}.css`)
 import 'swiper/dist/css/swiper.css'
 // ==============================
 
@@ -61,15 +61,7 @@ Quasar.start(() => {
     router,
     render: h => h(require('./App').default),
     created () {
-      console.log(navigator)
-      console.log(Vue.cordova.plugins)
-      if (localStorage.getItem('access_token')) {
-        this.setHeader()
-        router.push('/')
-      }
-      else {
-        router.push('/login')
-      }
+      router.push('/snyc')
     }
   })
 })
