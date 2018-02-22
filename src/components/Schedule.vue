@@ -99,7 +99,7 @@ export default {
           maxHeight: 'auto'
         },
         rowHeight: '50px',
-        responsive: true,
+        responsive: false,
         pagination: {
           rowsPerPage: 5,
           options: [5, 10, 15, 30, 50, 500]

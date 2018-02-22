@@ -17,10 +17,9 @@ import router from './router'
 import axios from 'axios'
 import VueLazyload from 'vue-lazyload'
 import VueCordova from 'vue-cordova'
-
-Vue.prototype.$http = axios
-Vue.config.productionTip = false
-Vue.use(Quasar) // Install Quasar Framework
+import VueIdb from 'vue-idb'
+import store from './store'
+import Vuelidate from 'vuelidate'
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')
@@ -30,28 +29,29 @@ import 'quasar-extras/material-icons'
 // import 'quasar-extras/fontawesome'
 // import 'quasar-extras/animate'
 
-Vue.mixin({
-  data: function () {
-    return {
-      get API_URL () {
-        return 'http://localhost/myapp/public/api/'
-      }
-    }
-  },
-  methods: {
-    setHeader: () => {
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('access_token')
-    }
-  }
-})
-
+axios.defaults.baseURL = 'http://api.simap.server-development.net'
+Vue.prototype.$http = axios
+Vue.config.productionTip = false
+Vue.use(Quasar) // Install Quasar Framework
+Vue.use(VueIdb)
 Vue.use(VueCordova, {
   optionTestKey: 'optionTestValue'
 })
 Vue.use(VueLazyload)
+Vue.use(Vuelidate)
 
-Vue.cordova.on('deviceready', () => {
-  console.log('Cordova : device is ready !')
+export default new VueIdb({
+  version: 3,
+  database: 'pohon',
+  schemas: [
+    { conditions: 'id, name, updatedAt' },
+    { pts: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
+    { kebuns: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
+    { bloks: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
+    { afdelings: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
+    { lilits: '++id, pohon_id, lilit_batang, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
+    { trees: 'id, blockCode, blockName, code, companyCode, companyName, divisionCode, divisionName, estateCode, estateName, latitude, longitude, number, plantedAt' }
+  ]
 })
 
 Quasar.start(() => {
@@ -59,16 +59,10 @@ Quasar.start(() => {
   new Vue({
     el: '#q-app',
     router,
+    store,
     render: h => h(require('./App').default),
     created () {
       router.push('/snyc')
     }
   })
 })
-
-console.log('adsads')
-document.addEventListener('deviceready', onDeviceReady, false)
-function onDeviceReady () {
-  console.log('taek')
-  console.log(navigator.camera)
-}

@@ -7,20 +7,21 @@
       <q-toolbar-title>
         Ukuran Lilit Batang
       </q-toolbar-title>
-      <q-btn flat>
+      <q-btn flat @click="save()">
         <q-icon name="save" />
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">
       <q-field>
-        <q-input float-label="Ukuran Lilit Batang" v-model="ukuran" type="number" />
+        <q-input float-label="Ukuran Lilit Batang" v-model="form.ukuran" type="number" :error="$v.form.ukuran.$error" />
       </q-field>
     </div>
   </q-layout>
 </template>
 
 <script>
-import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField } from 'quasar'
+import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField, Toast } from 'quasar'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -38,12 +39,37 @@ export default {
   data () {
     return {
       canGoBack: window.history.length > 1,
-      ukuran: ''
+      form: {
+        ukuran: ''
+      }
+    }
+  },
+  validations: {
+    form: {
+      ukuran: { required }
     }
   },
   methods: {
     goBack () {
       window.history.go(-1)
+    },
+    save () {
+      this.$v.form.$touch()
+      if (this.$v.form.$error) {
+        Toast.create('Please review fields again.')
+      }
+      else {
+        this.$store.dispatch('addLilit', {
+          lilit_batang: this.form.ukuran
+        })
+          .then((response) => {
+            this.form.ukuran = ''
+            this.$router.push('/audit')
+          })
+          .catch(() => {
+            Toast.create('Please review fields again.')
+          })
+      }
     }
   }
 }

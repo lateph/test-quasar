@@ -31,10 +31,10 @@
           <q-item-side icon="home" />
           <q-item-main label="Home"  />
         </q-side-link>
-        <q-side-link to="/audit" item>
+        <q-item item @click="scanBarCode()">
           <q-item-side icon="done all" />
           <q-item-main label="Audit" sublabel="" />
-        </q-side-link>
+        </q-item>
         <q-side-link to="/schedule" item>
           <q-item-side icon="schedule" />
           <q-item-main label="Jadwal" sublabel="" />
@@ -96,6 +96,13 @@ export default {
   methods: {
     launch (url) {
       openURL(url)
+    },
+    scanBarCode () {
+      this.$refs.layout.hideLeft()
+      let barcode = 'AAS.GAAS02F010001'
+      this.$store.dispatch('loadTree', barcode).then(() => {
+        this.$router.push('/audit')
+      })
     }
   }
 }

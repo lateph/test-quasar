@@ -1,33 +1,273 @@
 <template>
-  <div class="layout-padding docs-btn row justify-center">
-    <q-btn color="primary" class="full-width" icon="autorenew">Sinkronisasi data Umum</q-btn>
-    <q-btn color="primary" class="full-width" icon="file download">Sinkronisasi data spesifik</q-btn>
-    <q-btn color="primary" class="full-width" icon="file upload">Upload Data</q-btn>
+  <div class="layout-padding docs-btn row justify-center my-home">
+    <q-btn color="primary" class="full-width" icon="autorenew" @click="sync()">Sinkronisasi data Umum</q-btn>
+    <q-btn color="primary" class="full-width" icon="file download" @click="$refs.selectBlokModal.open()">Sinkronisasi data spesifik</q-btn>
+    <q-btn color="primary" class="full-width" icon="file upload" @click="logout()">Upload Data</q-btn>
+
+    <q-modal ref="selectBlokModal" minimized :content-css="{padding: '20px'}" no-esc-dismiss>
+      <q-select
+        filter
+        color="secondary"
+        float-label="Company"
+        v-model="pt"
+        :options="listPt"
+      />
+
+      <q-select
+        filter
+        color="secondary"
+        float-label="Estate"
+        v-model="kebun"
+        :options="listKebun"
+      />
+
+      <q-select
+        filter
+        color="secondary"
+        float-label="Division"
+        v-model="afdeling"
+        :options="listAfdeling"
+      />
+
+      <q-select
+        filter
+        color="secondary"
+        float-label="Block"
+        v-model="blok"
+        :options="listBlok"
+      />
+      <div class="modal-button-blok row">
+        <q-btn color="red" @click="$refs.selectBlokModal.close()">Cancel</q-btn>
+        <q-btn color="primary" @click="sync2()" :disabled="blok === ''">Next</q-btn>
+      </div>
+    </q-modal>
   </div>
 </template>
 
 <script>
-import { QBtn, QIcon } from 'quasar'
+import { QBtn, QIcon, Toast, Dialog, QModal, QSelect, Loading } from 'quasar'
+var querystring = require('querystring')
 
 export default {
   components: {
     QBtn,
-    QIcon
+    QIcon,
+    QModal,
+    QSelect
   },
   data () {
     return {
-      canGoBack: window.history.length > 1
+      canGoBack: window.history.length > 1,
+      pt: '',
+      kebun: '',
+      blok: '',
+      afdeling: '',
+      username: 'nizar.mahroussy@gmail.com',
+      password: 'indonesia',
+      listPt: [],
+      listKebun: [],
+      listAfdeling: [],
+      listBlok: []
     }
+  },
+  watch: {
+    pt: function (val) {
+      this.loadKebun()
+    },
+    kebun: function (val) {
+      this.loadAfdeling()
+    },
+    afdeling: function (val) {
+      this.loadBlok()
+    }
+  },
+  mounted () {
+    this.loadPt()
   },
   methods: {
     goBack () {
       window.history.go(-1)
+    },
+    loadPt () {
+      this.pt = ''
+      this.listPt = []
+      this.$db.pts.each(pt => {
+        this.listPt.push({ label: pt.name, value: pt.code })
+      })
+    },
+    loadKebun () {
+      this.kebun = ''
+      this.listKebun = []
+      this.$db.kebuns.where('parent').equals(this.pt).each(kebun => {
+        this.listKebun.push({ label: kebun.name, value: kebun.code })
+      })
+    },
+    loadAfdeling () {
+      this.afdeling = ''
+      this.listAfdeling = []
+      this.$db.afdelings.where('parent').equals(this.kebun).each(afdeling => {
+        this.listAfdeling.push({ label: afdeling.name, value: afdeling.code })
+      })
+    },
+    loadBlok () {
+      this.blok = ''
+      this.listBlok = []
+      this.$db.bloks.where('parent').equals(this.afdeling).each(blok => {
+        this.listBlok.push({ label: blok.name, value: blok.code })
+      })
+    },
+    async sync () {
+      let progress = {
+        model: 0
+      }
+      const dialog = Dialog.create({
+        title: 'Progress',
+        message: 'Sync...',
+        nobuttons: true,
+        noBackdropDismiss: true,
+        noEscDismiss: true,
+        progress
+      })
+      try {
+        // table conditions
+        let data = await this.$http.post('sync')
+        const conditions = data.data.data.conditions
+        this.$db.conditions.clear()
+        await this.$db.conditions.bulkAdd(conditions)
+        progress.model = 20
+        // table PT
+        // let data = await this.$http.post('sync')
+        const pts = data.data.data.organizations.PT
+        this.$db.pts.clear()
+        await this.$db.pts.bulkAdd(pts)
+        progress.model = 40
+        // table KEBUN
+        // let data = await this.$http.post('sync')
+        const kebuns = data.data.data.organizations.KEBUN
+        this.$db.kebuns.clear()
+        await this.$db.kebuns.bulkAdd(kebuns)
+        progress.model = 60
+        // table BLOK
+        // let data = await this.$http.post('sync')
+        const bloks = data.data.data.organizations.BLOK
+        this.$db.bloks.clear()
+        await this.$db.bloks.bulkAdd(bloks)
+        progress.model = 80
+        // table AFDELING
+        // let data = await this.$http.post('sync')
+        const afdelings = data.data.data.organizations.AFDELING
+        this.$db.afdelings.clear()
+        await this.$db.afdelings.bulkAdd(afdelings)
+        progress.model = 100
+        dialog.close()
+        this.loadPt()
+
+        Toast.create['positive']({
+          html: 'Sinkornisasi data umum sukses'
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    },
+    sync2 () {
+      Loading.show()
+      this.$http.post('fetch/tree/block/' + this.blok)
+        .then(async (response) => {
+          try {
+            await this.$db.afdelings.clear()
+            await this.$db.trees.bulkAdd(response.data.data.trees)
+          }
+          catch (error) {
+            console.log(error)
+          }
+          Loading.hide()
+          this.$refs.selectBlokModal.close()
+          Toast.create['positive']({
+            html: 'Sinkornisasi data umum sukses'
+          })
+        })
+        .catch(() => {
+          // if (error.response.status === 403) {
+          Loading.hide()
+          this.login()
+          // }
+        })
+    },
+    login () {
+      console.log('taek cok')
+      const dLogin = Dialog.create({
+        title: 'Login',
+        form: {
+          username: {
+            type: 'text',
+            label: 'Username',
+            model: this.username
+          },
+          password: {
+            type: 'password',
+            label: 'Password',
+            model: this.password
+          }
+        },
+        buttons: [
+          'Cancel',
+          {
+            label: 'Ok',
+            handler: (data) => {
+              Loading.show()
+              this.username = data.username
+              this.password = data.password
+              this.$http.post('login', querystring.stringify({
+                'User[username]': this.username,
+                'User[password]': this.password
+              }), {
+                headers: {
+                  'content-type': 'application/x-www-form-urlencoded'
+                }
+              })
+                .then(response => {
+                  Toast.create['positive']({
+                    html: 'Login sukses'
+                  })
+                  dLogin.close()
+                  Loading.hide()
+                  this.sync2()
+                })
+                .catch(error => {
+                  Loading.hide()
+                  console.log(error)
+                })
+            }
+          }
+        ]
+      })
+    },
+    logout () {
+      this.pt = 'AAS'
+      const timeout = setTimeout(() => {
+        clearInterval(timeout)
+        this.kebun = 'GAAS'
+      }, 1000)
+      const timeout2 = setTimeout(() => {
+        clearInterval(timeout2)
+        this.afdeling = 'GAAS02'
+      }, 2000)
+      const timeout3 = setTimeout(() => {
+        clearInterval(timeout3)
+        this.blok = 'GAAS02F01'
+      }, 3000)
     }
   }
 }
 </script>
 
 <style lang="stylus">
-  .q-btn
-    margin 5px
+  .my-home
+    .q-btn
+      margin 5px
+  .modal-button-blok
+    justify-content flex-end
+    button
+      margin-left 10px
 </style>
