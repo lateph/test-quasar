@@ -65,11 +65,11 @@ export default new VueRouter({
       component: load('Lilit')
     },
     {
-      path: '/ihtp',
+      path: '/ihtp/:id?',
       component: load('IdentifikasiHTP')
     },
     {
-      path: '/phtp',
+      path: '/phtp/:id?',
       component: load('PengendalianHTP')
     },
     {

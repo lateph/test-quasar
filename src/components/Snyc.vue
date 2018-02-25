@@ -201,6 +201,18 @@ export default {
             flag: 1
           }
         }))
+        Loading.show('Sinkornisasi data identifikasi htp ... ')
+        const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + this.blok)
+        this.$db.ihtps.clear()
+        await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            keterangan: x.description,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
         Loading.hide()
         this.$refs.selectBlokModal.close()
         Toast.create['positive']({
@@ -225,7 +237,7 @@ export default {
       try {
         Loading.show('Uploading data lilit pohon')
         const dataLilit = await this.$store.dispatch('getUploadDataLilit')
-        await this.$http.post('maintain/girth', querystring.stringify(dataLilit), {
+        await this.$http.post('maintain/tree-girth', querystring.stringify(dataLilit), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
@@ -239,6 +251,26 @@ export default {
             id: x.id,
             pohon_id: x.treeId,
             lilit_batang: x.value,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
+
+        Loading.show('Uploading data lilit pohon')
+        const dataihtps = await this.$store.dispatch('getUploadDataIHtp')
+        await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        Loading.show('Sinkornisasi data  ... ')
+        const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + blok)
+        this.$db.ihtps.clear()
+        await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            keterangan: x.description,
             checked_at: x.checkedAt,
             flag: 1
           }

@@ -44,9 +44,44 @@
           </q-data-table>
         </div>
       </q-collapsible>
-      <q-collapsible icon="zoom in" label="Identifikasi HTP" sublabel="0 New Data">
-        <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      <q-collapsible icon="zoom in" label="Identifikasi HTP" :sublabel="getNewIHtp.length + ' New Data'">
+        <div>    
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/ihtp/')">Tambah</q-btn>
+          <q-data-table
+            :data="getNewIHtp"
+            :config="config2"
+            :columns="columnsIHtps"
+            class="set-table-wrap"
+          >
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+
+            <!-- Custom renderer for "source" column -->
+            <div slot="col-source" slot-scope="cell">
+              <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+                Audit
+                <q-tooltip>Some data</q-tooltip>
+              </span>
+              <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+            </div>
+
+            <!-- Custom renderer for "action" column with button for custom action -->
+            <div slot='col-action' slot-scope='cell'>
+              <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+            </div>
+
+            <!-- Custom renderer when user selected one or more rows -->
+            <div slot="selection" slot-scope="selection">
+              <q-btn color="primary" @click="$router.replace('/ihtp/' + selection.rows[0].data.local_id)">
+                <i>edit</i>
+              </q-btn>
+              <q-btn color="primary" @click="deleteIHtp(selection.rows[0].data.local_id)">
+                <i>delete</i>
+              </q-btn>
+            </div>
+          </q-data-table>
         </div>
       </q-collapsible>
       <q-collapsible icon="build" label="Pengendalian HTP" sublabel="0 New Data">
@@ -92,6 +127,15 @@ export default {
         }
         // selection: 'single'
       },
+      config2: {
+        rowHeight: '40px',
+        responsive: true,
+        selection: 'single',
+        pagination: {
+          rowsPerPage: 7
+        }
+        // selection: 'single'
+      },
       columns: [
         {
           label: 'Ukuran',
@@ -115,12 +159,37 @@ export default {
           }
         }
       ],
+      columnsIHtps: [
+        {
+          label: 'Keterangan',
+          field: 'keterangan',
+          filter: true,
+          sort: true,
+          classes: 'setnowrap',
+          width: '200px',
+          // style: {'text-align': 'right'},
+          type: 'number'
+        },
+        {
+          label: 'Checked At',
+          field: 'checked_at',
+          filter: true,
+          width: '200px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      ],
       canGoBack: window.history.length > 1
     }
   },
   computed: {
     ...mapGetters([
-      'getNewLilit'
+      'getNewLilit',
+      'getNewIHtp'
     ])
   },
   methods: {
@@ -129,6 +198,9 @@ export default {
     },
     deleteLilit (id) {
       this.$store.dispatch('deleteLilit', id)
+    },
+    deleteIHtp (id) {
+      this.$store.dispatch('deleteIHtp', id)
     }
   }
 }
@@ -139,4 +211,7 @@ export default {
     margin 5px
   .audit-collapsible
     width 100%
+  .responsive
+    .setnowrap
+      white-space pre-line !important
 </style>
