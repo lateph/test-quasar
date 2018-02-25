@@ -8,7 +8,7 @@
         Pengendalian HTP
       </q-toolbar-title>
       <q-btn flat>
-        <q-icon name="save" />
+        <q-icon name="save"  @click="save()"/>
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">
@@ -16,14 +16,15 @@
       <q-btn class="add_img" icon="add" color="primary">Tambah</q-btn>
       <q-btn class="hapus_img" icon="delete" color="negative">Hapus</q-btn>
       <q-field>
-        <q-input float-label="Keterangan" v-model="ukuran" type="textarea" :min-rows="5" />
+        <q-input float-label="Keterangan" v-model="form.keterangan" type="textarea" :min-rows="5"  :error="$v.form.keterangan.$error"  />
       </q-field>
     </div>
   </q-layout>
 </template>
 
 <script>
-import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField, QGalleryCarousel } from 'quasar'
+import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField, QGalleryCarousel, Toast } from 'quasar'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -39,10 +40,26 @@ export default {
   directives: {
     GoBack
   },
+  beforeRouteEnter (to, from, next) {
+    next((vm) => {
+      if (to.params.id === undefined) {
+        vm.edit = false
+      }
+      else {
+        vm.edit = true
+        vm.form.id = to.params.id
+        vm.form.keterangan = vm.$store.getters.getNewPHtpById(to.params.id).keterangan
+      }
+    })
+  },
   data () {
     return {
       canGoBack: window.history.length > 1,
-      ukuran: '',
+      edit: false,
+      form: {
+        id: 0,
+        keterangan: ''
+      },
       secondSlider: [
         'statics/mountains.jpg',
         'statics/parallax1.jpg',
@@ -50,9 +67,47 @@ export default {
       ]
     }
   },
+  validations: {
+    form: {
+      keterangan: { required }
+    }
+  },
   methods: {
     goBack () {
       window.history.go(-1)
+    },
+    save () {
+      this.$v.form.$touch()
+      if (this.$v.form.$error) {
+        Toast.create('Please review fields again.')
+      }
+      else {
+        if (this.edit) {
+          this.$store.dispatch('editPHtp', {
+            local_id: this.form.id,
+            keterangan: this.form.keterangan
+          })
+            .then((response) => {
+              this.form.keterangan = ''
+              this.$router.push('/audit')
+            })
+            .catch((error) => {
+              Toast.create(error.message)
+            })
+        }
+        else {
+          this.$store.dispatch('addPHtp', {
+            keterangan: this.form.keterangan
+          })
+            .then((response) => {
+              this.form.keterangan = ''
+              this.$router.push('/audit')
+            })
+            .catch(() => {
+              Toast.create('Please review fields again.')
+            })
+        }
+      }
     }
   }
 }

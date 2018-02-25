@@ -84,21 +84,85 @@
           </q-data-table>
         </div>
       </q-collapsible>
-      <q-collapsible icon="build" label="Pengendalian HTP" sublabel="0 New Data">
-        <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-      </q-collapsible>
-      <q-collapsible icon="description" label="Sensus" sublabel="0 New Data">
-        <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-      </q-collapsible>
+      <q-collapsible icon="build" label="Pengendalian HTP" :sublabel="getNewPHtp.length + ' New Data'">
+        <div>    
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/phtp/')">Tambah</q-btn>
+          <q-data-table
+            :data="getNewPHtp"
+            :config="config2"
+            :columns="columnsPHtps"
+            class="set-table-wrap"
+          >
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
 
-      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/lilit')">Ukur Lilit Batang</q-btn>
-      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/ihtp')">Identifikasi HTP</q-btn>
-      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/phtp')">Pengendalian HTP</q-btn>
-      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/sensus')">Sensus</q-btn>
+            <!-- Custom renderer for "source" column -->
+            <div slot="col-source" slot-scope="cell">
+              <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+                Audit
+                <q-tooltip>Some data</q-tooltip>
+              </span>
+              <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+            </div>
+
+            <!-- Custom renderer for "action" column with button for custom action -->
+            <div slot='col-action' slot-scope='cell'>
+              <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+            </div>
+
+            <!-- Custom renderer when user selected one or more rows -->
+            <div slot="selection" slot-scope="selection">
+              <q-btn color="primary" @click="$router.replace('/phtp/' + selection.rows[0].data.local_id)">
+                <i>edit</i>
+              </q-btn>
+              <q-btn color="primary" @click="deletePHtp(selection.rows[0].data.local_id)">
+                <i>delete</i>
+              </q-btn>
+            </div>
+          </q-data-table>
+        </div>
+      </q-collapsible>
+      <q-collapsible icon="description" label="Sensus" :sublabel="getNewSensus.length + ' New Data'">
+        <div>    
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/sensus/')">Tambah</q-btn>
+          <q-data-table
+            :data="getNewSensus"
+            :config="config3"
+            :columns="columnsSensus"
+          >
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+
+            <!-- Custom renderer for "source" column -->
+            <div slot="col-source" slot-scope="cell">
+              <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+                Audit
+                <q-tooltip>Some data</q-tooltip>
+              </span>
+              <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+            </div>
+
+            <!-- Custom renderer for "action" column with button for custom action -->
+            <div slot='col-action' slot-scope='cell'>
+              <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+            </div>
+
+            <!-- Custom renderer when user selected one or more rows -->
+            <div slot="selection" slot-scope="selection">
+              <q-btn color="primary" @click="$router.replace('/sensus/' + selection.rows[0].data.local_id)">
+                <i>edit</i>
+              </q-btn>
+              <q-btn color="primary" @click="deleteSensus(selection.rows[0].data.local_id)">
+                <i>delete</i>
+              </q-btn>
+            </div>
+          </q-data-table>
+        </div>
+      </q-collapsible>
     </q-list>
   </div>
 </template>
@@ -119,6 +183,15 @@ export default {
   data () {
     return {
       config: {
+        rowHeight: '40px',
+        responsive: false,
+        selection: 'single',
+        pagination: {
+          rowsPerPage: 7
+        }
+        // selection: 'single'
+      },
+      config3: {
         rowHeight: '40px',
         responsive: false,
         selection: 'single',
@@ -159,7 +232,56 @@ export default {
           }
         }
       ],
+      columnsSensus: [
+        {
+          label: 'Kondisi',
+          field: 'kondisi_id',
+          filter: true,
+          sort: true,
+          width: '120px',
+          type: 'text',
+          format: (value) => {
+            return this.$store.getters.textKondisi(value)
+          }
+        },
+        {
+          label: 'Checked At',
+          field: 'checked_at',
+          filter: true,
+          width: '200px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      ],
       columnsIHtps: [
+        {
+          label: 'Keterangan',
+          field: 'keterangan',
+          filter: true,
+          sort: true,
+          classes: 'setnowrap',
+          width: '200px',
+          // style: {'text-align': 'right'},
+          type: 'number'
+        },
+        {
+          label: 'Checked At',
+          field: 'checked_at',
+          filter: true,
+          width: '200px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      ],
+      columnsPHtps: [
         {
           label: 'Keterangan',
           field: 'keterangan',
@@ -189,7 +311,9 @@ export default {
   computed: {
     ...mapGetters([
       'getNewLilit',
-      'getNewIHtp'
+      'getNewIHtp',
+      'getNewSensus',
+      'getNewPHtp'
     ])
   },
   methods: {
@@ -201,6 +325,12 @@ export default {
     },
     deleteIHtp (id) {
       this.$store.dispatch('deleteIHtp', id)
+    },
+    deletePHtp (id) {
+      this.$store.dispatch('deletePHtp', id)
+    },
+    deleteSensus (id) {
+      this.$store.dispatch('deleteSensus', id)
     }
   }
 }

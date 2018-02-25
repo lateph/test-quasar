@@ -118,9 +118,11 @@ export default {
       })
     },
     async openModalS2 () {
-      const dataLilit = await this.$store.dispatch('getUploadDataLilit')
-      console.log(dataLilit)
-      if (Object.keys(dataLilit).length > 0) {
+      const data1 = await this.$store.dispatch('getUploadDataLilit')
+      const data2 = await this.$store.dispatch('getUploadDataIHtp')
+      const data3 = await this.$store.dispatch('getUploadDataPHtp')
+      const data4 = await this.$store.dispatch('getUploadDataSensus')
+      if (Object.keys(data1).length > 0 || Object.keys(data2).length > 0 || Object.keys(data3).length > 0 || Object.keys(data4).length > 0) {
         Toast.create['negative']({
           html: 'You have new data please upload data to server first'
         })
@@ -201,10 +203,34 @@ export default {
             flag: 1
           }
         }))
+        Loading.show('Sinkornisasi data sensus ... ')
+        const sensuss = await this.$http.post('fetch/tree-census/block/' + this.blok)
+        this.$db.sensuss.clear()
+        await this.$db.sensuss.bulkAdd(sensuss.data.data.treeCensuses.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            kondisi_id: x.conditionId,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
         Loading.show('Sinkornisasi data identifikasi htp ... ')
         const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + this.blok)
         this.$db.ihtps.clear()
         await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            keterangan: x.description,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
+        Loading.show('Sinkornisasi data pengendalian htp ... ')
+        const phtps = await this.$http.post('fetch/tree-pest-control/block/' + this.blok)
+        this.$db.phtps.clear()
+        await this.$db.phtps.bulkAdd(phtps.data.data.treePestControls.map(x => {
           return {
             id: x.id,
             pohon_id: x.treeId,
@@ -256,7 +282,27 @@ export default {
           }
         }))
 
-        Loading.show('Uploading data lilit pohon')
+        Loading.show('Uploading data sensus pohon')
+        const dataSensus = await this.$store.dispatch('getUploadDataSensus')
+        await this.$http.post('maintain/tree-census', querystring.stringify(dataSensus), {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        Loading.show('Sinkornisasi data Sensus ... ')
+        const sensuss = await this.$http.post(`fetch/tree-census/block/${blok}`)
+        this.$db.sensuss.clear()
+        await this.$db.sensuss.bulkAdd(sensuss.data.data.treeCensuses.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            kondisi_id: x.conditionId,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
+
+        Loading.show('Uploading data identifikasi htp')
         const dataihtps = await this.$store.dispatch('getUploadDataIHtp')
         await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
           headers: {
@@ -275,6 +321,27 @@ export default {
             flag: 1
           }
         }))
+
+        Loading.show('Uploading data pengendalian htp')
+        const dataphtps = await this.$store.dispatch('getUploadDataPHtp')
+        await this.$http.post('maintain/tree-pest-control', querystring.stringify(dataphtps), {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        Loading.show('Sinkornisasi data  ... ')
+        const phtps = await this.$http.post('fetch/tree-pest-control/block/' + blok)
+        this.$db.phtps.clear()
+        await this.$db.phtps.bulkAdd(phtps.data.data.treePestControls.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            keterangan: x.description,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
+
         Loading.hide()
         Toast.create['positive']({
           html: 'upload data umum sukses'

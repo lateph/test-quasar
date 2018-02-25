@@ -8,7 +8,7 @@
         Sensus
       </q-toolbar-title>
       <q-btn flat>
-        <q-icon name="save" />
+        <q-icon name="save"  @click="save()"/>
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">
@@ -16,19 +16,18 @@
       <q-option-group
         color="secondary"
         type="radio"
-        v-model="ukuran"
-        :options="[
-          { label: 'Mati', value: 'op1' },
-          { label: 'Hidup', value: 'op2' },
-          { label: 'Kosong', value: 'op3' }
-        ]"
+        v-model="form.kondisi_id"
+        :options="getConditionOptions"
+        :error="$v.form.kondisi_id.$error"
       />
     </div>
   </q-layout>
 </template>
 
 <script>
-import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QOptionGroup, QField } from 'quasar'
+import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QOptionGroup, QField, Toast } from 'quasar'
+import { mapGetters } from 'vuex'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -43,15 +42,73 @@ export default {
   directives: {
     GoBack
   },
+  computed: {
+    ...mapGetters([
+      'getConditionOptions'
+    ])
+  },
   data () {
     return {
-      canGoBack: window.history.length > 1,
-      ukuran: 'op2'
+      edit: false,
+      form: {
+        id: 0,
+        kondisi_id: ''
+      }
+    }
+  },
+  beforeRouteEnter (to, from, next) {
+    next((vm) => {
+      if (to.params.id === undefined) {
+        vm.edit = false
+      }
+      else {
+        vm.edit = true
+        vm.form.id = to.params.id
+        vm.form.kondisi_id = vm.$store.getters.getNewSensusById(to.params.id).kondisi_id
+      }
+    })
+  },
+  validations: {
+    form: {
+      kondisi_id: { required }
     }
   },
   methods: {
     goBack () {
       window.history.go(-1)
+    },
+    save () {
+      this.$v.form.$touch()
+      if (this.$v.form.$error) {
+        Toast.create('Please review fields again.')
+      }
+      else {
+        if (this.edit) {
+          this.$store.dispatch('editSensus', {
+            local_id: this.form.id,
+            kondisi_id: this.form.kondisi_id
+          })
+            .then((response) => {
+              this.form.kondisi_id = ''
+              this.$router.push('/audit')
+            })
+            .catch((error) => {
+              Toast.create(error.message)
+            })
+        }
+        else {
+          this.$store.dispatch('addSensus', {
+            kondisi_id: this.form.kondisi_id
+          })
+            .then((response) => {
+              this.form.kondisi_id = ''
+              this.$router.push('/audit')
+            })
+            .catch(() => {
+              Toast.create('Please review fields again.')
+            })
+        }
+      }
     }
   }
 }

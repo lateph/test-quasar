@@ -73,7 +73,7 @@ export default new VueRouter({
       component: load('PengendalianHTP')
     },
     {
-      path: '/sensus',
+      path: '/sensus/:id?',
       component: load('Sensus')
     },
     {
