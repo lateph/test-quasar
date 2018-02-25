@@ -30,6 +30,9 @@ import 'quasar-extras/material-icons'
 // import 'quasar-extras/animate'
 
 axios.defaults.baseURL = 'http://api.simap.server-development.net'
+axios.defaults.headers.common['X-SIMAP-appKey'] = 'poiuyTREWQ1234509876'
+axios.defaults.headers.common['X-SIMAP-appSecret'] = 'QWERTyuiop0987612345'
+console.log(axios.defaults.headers)
 Vue.prototype.$http = axios
 Vue.config.productionTip = false
 Vue.use(Quasar) // Install Quasar Framework
@@ -49,7 +52,9 @@ export default new VueIdb({
     { kebuns: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { bloks: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { afdelings: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
-    { lilits: '++id, pohon_id, lilit_batang, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
+    { lilits: '++local_id, id, pohon_id, lilit_batang, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
+    { ihtps: '++local_id, id, pohon_id, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
+    { phtps: '++local_id, id, pohon_id, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
     { trees: 'id, blockCode, blockName, code, companyCode, companyName, divisionCode, divisionName, estateCode, estateName, latitude, longitude, number, plantedAt' }
   ]
 })

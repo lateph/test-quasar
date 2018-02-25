@@ -59,7 +59,7 @@ export default new VueRouter({
       ]
     },
     {
-      path: '/lilit',
+      path: '/lilit/:id?',
       // We point it to our component
       // where we defined our QLayout
       component: load('Lilit')

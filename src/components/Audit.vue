@@ -7,7 +7,7 @@
     <q-list inset-separator class="audit-collapsible">
       <q-collapsible icon="track changes" label="Ukur Lilit Batang" :sublabel="getNewLilit.length + ' New Data'">
         <div>    
-          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/lilit')">Tambah</q-btn>
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/lilit/')">Tambah</q-btn>
           <q-data-table
             :data="getNewLilit"
             :config="config"
@@ -34,26 +34,36 @@
 
             <!-- Custom renderer when user selected one or more rows -->
             <div slot="selection" slot-scope="selection">
-              <q-btn color="primary" @click="changeMessage(selection)">
+              <q-btn color="primary" @click="$router.replace('/lilit/' + selection.rows[0].data.local_id)">
                 <i>edit</i>
               </q-btn>
-              <q-btn color="primary" @click="deleteRow(selection)">
+              <q-btn color="primary" @click="deleteLilit(selection.rows[0].data.local_id)">
                 <i>delete</i>
               </q-btn>
             </div>
           </q-data-table>
         </div>
       </q-collapsible>
-      <q-collapsible icon="send" label="Outbox" sublabel="Empty">
+      <q-collapsible icon="zoom in" label="Identifikasi HTP" sublabel="0 New Data">
         <div>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </div>
       </q-collapsible>
-      <q-collapsible icon="drafts" label="Draft" sublabel="Draft a new email">
+      <q-collapsible icon="build" label="Pengendalian HTP" sublabel="0 New Data">
         <div>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </div>
       </q-collapsible>
+      <q-collapsible icon="description" label="Sensus" sublabel="0 New Data">
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </div>
+      </q-collapsible>
+
+      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/lilit')">Ukur Lilit Batang</q-btn>
+      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/ihtp')">Identifikasi HTP</q-btn>
+      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/phtp')">Pengendalian HTP</q-btn>
+      <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/sensus')">Sensus</q-btn>
     </q-list>
   </div>
 </template>
@@ -61,6 +71,7 @@
 <script>
 import { QBtn, QIcon, QList, QCollapsible, QDataTable } from 'quasar'
 import { mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   components: {
@@ -74,28 +85,35 @@ export default {
     return {
       config: {
         rowHeight: '40px',
-        responsive: false
+        responsive: false,
+        selection: 'single',
+        pagination: {
+          rowsPerPage: 7
+        }
         // selection: 'single'
       },
       columns: [
         {
-          label: 'Ukuran Lilit',
+          label: 'Ukuran',
           field: 'lilit_batang',
           filter: true,
           sort: true,
+          width: '100px',
+          style: {'text-align': 'right'},
           type: 'number'
         },
         {
-          label: 'Create At',
-          field: 'created_at',
+          label: 'Checked At',
+          field: 'checked_at',
           filter: true,
+          width: '200px',
           sort (a, b) {
             return (new Date(a)) - (new Date(b))
           },
           format (value) {
-            return new Date(value).toLocaleString()
+            return moment(value).format('YYYY-MM-DD HH:mm:ss')
           }
-        },
+        }
       ],
       canGoBack: window.history.length > 1
     }
@@ -108,6 +126,9 @@ export default {
   methods: {
     goBack () {
       window.history.go(-1)
+    },
+    deleteLilit (id) {
+      this.$store.dispatch('deleteLilit', id)
     }
   }
 }

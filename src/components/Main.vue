@@ -70,7 +70,8 @@ import {
   QItemSide,
   QItemMain,
   QCard,
-  QSideLink
+  QSideLink,
+  Toast
 } from 'quasar'
 
 export default {
@@ -102,6 +103,10 @@ export default {
       let barcode = 'AAS.GAAS02F010001'
       this.$store.dispatch('loadTree', barcode).then(() => {
         this.$router.push('/audit')
+      }).catch(() => {
+        Toast.create['negative']({
+          html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+        })
       })
     }
   }

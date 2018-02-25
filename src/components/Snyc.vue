@@ -1,8 +1,9 @@
 <template>
   <div class="layout-padding docs-btn row justify-center my-home">
     <q-btn color="primary" class="full-width" icon="autorenew" @click="sync()">Sinkronisasi data Umum</q-btn>
-    <q-btn color="primary" class="full-width" icon="file download" @click="$refs.selectBlokModal.open()">Sinkronisasi data spesifik</q-btn>
-    <q-btn color="primary" class="full-width" icon="file upload" @click="logout()">Upload Data</q-btn>
+    <q-btn color="primary" class="full-width" icon="file download" @click="openModalS2()">Sinkronisasi data spesifik</q-btn>    
+    <q-btn color="primary" class="full-width" icon="file upload" @click="upload()">Upload Data</q-btn>
+    <q-btn color="primary" class="full-width" icon="file upload" @click="logout()">Set Test</q-btn>
 
     <q-modal ref="selectBlokModal" minimized :content-css="{padding: '20px'}" no-esc-dismiss>
       <q-select
@@ -45,7 +46,7 @@
 </template>
 
 <script>
-import { QBtn, QIcon, Toast, Dialog, QModal, QSelect, Loading } from 'quasar'
+import { QBtn, QIcon, Toast, Dialog, QModal, QSelect, Loading, LocalStorage } from 'quasar'
 var querystring = require('querystring')
 
 export default {
@@ -116,6 +117,18 @@ export default {
         this.listBlok.push({ label: blok.name, value: blok.code })
       })
     },
+    async openModalS2 () {
+      const dataLilit = await this.$store.dispatch('getUploadDataLilit')
+      console.log(dataLilit)
+      if (Object.keys(dataLilit).length > 0) {
+        Toast.create['negative']({
+          html: 'You have new data please upload data to server first'
+        })
+      }
+      else {
+        this.$refs.selectBlokModal.open()
+      }
+    },
     async sync () {
       let progress = {
         model: 0
@@ -170,32 +183,84 @@ export default {
         console.log(error)
       }
     },
-    sync2 () {
-      Loading.show()
-      this.$http.post('fetch/tree/block/' + this.blok)
-        .then(async (response) => {
-          try {
-            await this.$db.afdelings.clear()
-            await this.$db.trees.bulkAdd(response.data.data.trees)
+    async sync2 () {
+      Loading.show('Sinkornisasi data umum ... ')
+      try {
+        let response = await this.$http.post('fetch/tree/block/' + this.blok)
+        this.$db.trees.clear()
+        await this.$db.trees.bulkAdd(response.data.data.trees)
+        Loading.show('Sinkornisasi data lilit ... ')
+        const lilits = await this.$http.post('fetch/tree-girth/block/' + this.blok)
+        this.$db.lilits.clear()
+        await this.$db.lilits.bulkAdd(lilits.data.data.treeGirths.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            lilit_batang: x.value,
+            checked_at: x.checkedAt,
+            flag: 1
           }
-          catch (error) {
-            console.log(error)
-          }
+        }))
+        Loading.hide()
+        this.$refs.selectBlokModal.close()
+        Toast.create['positive']({
+          html: 'Sinkornisasi data spesifik sukses'
+        })
+        LocalStorage.set('blok', this.blok)
+        Loading.hide()
+      }
+      catch (error) {
+        if (error.response && error.response.status === 403) {
           Loading.hide()
-          this.$refs.selectBlokModal.close()
-          Toast.create['positive']({
-            html: 'Sinkornisasi data umum sukses'
+          this.login(2)
+        }
+        else {
+          Toast.create['negative']({
+            html: error.message
           })
-        })
-        .catch(() => {
-          // if (error.response.status === 403) {
-          Loading.hide()
-          this.login()
-          // }
-        })
+        }
+      }
     },
-    login () {
-      console.log('taek cok')
+    async upload () {
+      try {
+        Loading.show('Uploading data lilit pohon')
+        const dataLilit = await this.$store.dispatch('getUploadDataLilit')
+        await this.$http.post('maintain/girth', querystring.stringify(dataLilit), {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        Loading.show('Sinkornisasi data lilit ... ')
+        let blok = LocalStorage.get.item('blok')
+        const lilits = await this.$http.post(`fetch/tree-girth/block/${blok}`)
+        this.$db.lilits.clear()
+        await this.$db.lilits.bulkAdd(lilits.data.data.treeGirths.map(x => {
+          return {
+            id: x.id,
+            pohon_id: x.treeId,
+            lilit_batang: x.value,
+            checked_at: x.checkedAt,
+            flag: 1
+          }
+        }))
+        Loading.hide()
+        Toast.create['positive']({
+          html: 'upload data umum sukses'
+        })
+      }
+      catch (error) {
+        Loading.hide()
+        if (error.response && error.response.status === 403) {
+          this.login()
+        }
+        else {
+          Toast.create['negative']({
+            html: error.message
+          })
+        }
+      }
+    },
+    login (type) {
       const dLogin = Dialog.create({
         title: 'Login',
         form: {
@@ -227,12 +292,18 @@ export default {
                 }
               })
                 .then(response => {
+                  LocalStorage.set('user', response.data.data)
                   Toast.create['positive']({
                     html: 'Login sukses'
                   })
                   dLogin.close()
                   Loading.hide()
-                  this.sync2()
+                  if (type === 2) {
+                    this.upload()
+                  }
+                  else {
+                    this.sync2()
+                  }
                 })
                 .catch(error => {
                   Loading.hide()

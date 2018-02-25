@@ -38,11 +38,24 @@ export default {
   },
   data () {
     return {
-      canGoBack: window.history.length > 1,
+      edit: false,
       form: {
+        id: 0,
         ukuran: ''
       }
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next((vm) => {
+      if (to.params.id === undefined) {
+        vm.edit = false
+      }
+      else {
+        vm.edit = true
+        vm.form.id = to.params.id
+        vm.form.ukuran = vm.$store.getters.getNewLilitById(to.params.id).lilit_batang
+      }
+    })
   },
   validations: {
     form: {
@@ -59,16 +72,31 @@ export default {
         Toast.create('Please review fields again.')
       }
       else {
-        this.$store.dispatch('addLilit', {
-          lilit_batang: this.form.ukuran
-        })
-          .then((response) => {
-            this.form.ukuran = ''
-            this.$router.push('/audit')
+        if (this.edit) {
+          this.$store.dispatch('editLilit', {
+            local_id: this.form.id,
+            lilit_batang: this.form.ukuran
           })
-          .catch(() => {
-            Toast.create('Please review fields again.')
+            .then((response) => {
+              this.form.ukuran = ''
+              this.$router.push('/audit')
+            })
+            .catch((error) => {
+              Toast.create(error.message)
+            })
+        }
+        else {
+          this.$store.dispatch('addLilit', {
+            lilit_batang: this.form.ukuran
           })
+            .then((response) => {
+              this.form.ukuran = ''
+              this.$router.push('/audit')
+            })
+            .catch(() => {
+              Toast.create('Please review fields again.')
+            })
+        }
       }
     }
   }
