@@ -48,6 +48,8 @@ export default new VueIdb({
   database: 'pohon',
   schemas: [
     { conditions: 'id, name, updatedAt' },
+    { ihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, base64, width, height, extension,flag' },
+    { newihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, base64, width, height, extension,flag' },
     { pts: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { kebuns: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { bloks: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },

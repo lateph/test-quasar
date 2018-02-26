@@ -12,9 +12,6 @@
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">
-      <q-gallery-carousel dots infinite :src="secondSlider" actions></q-gallery-carousel>
-      <q-btn class="add_img" icon="add" color="primary">Tambah</q-btn>
-      <q-btn class="hapus_img" icon="delete" color="negative">Hapus</q-btn>
       <q-field>
         <q-input float-label="Keterangan" v-model="form.keterangan" type="textarea" :min-rows="5"  :error="$v.form.keterangan.$error"  />
       </q-field>
@@ -23,7 +20,7 @@
 </template>
 
 <script>
-import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField, QGalleryCarousel, Toast } from 'quasar'
+import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QInput, QField, Toast } from 'quasar'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
@@ -34,8 +31,7 @@ export default {
     QToolbar,
     QToolbarTitle,
     QInput,
-    QField,
-    QGalleryCarousel
+    QField
   },
   directives: {
     GoBack
@@ -59,12 +55,7 @@ export default {
       form: {
         id: 0,
         keterangan: ''
-      },
-      secondSlider: [
-        'statics/mountains.jpg',
-        'statics/parallax1.jpg',
-        'statics/parallax2.jpg'
-      ]
+      }
     }
   },
   validations: {

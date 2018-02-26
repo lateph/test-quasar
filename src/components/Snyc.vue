@@ -182,12 +182,17 @@ export default {
         })
       }
       catch (error) {
-        console.log(error)
+        Toast.create['negative']({
+          html: 'Sinkornisasi data gagal mohon cek storage / koneksi anda'
+        })
       }
     },
     async sync2 () {
       Loading.show('Sinkornisasi data umum ... ')
       try {
+        if (this.block === null) {
+          throw new Error('Pilih Blok')
+        }
         let response = await this.$http.post('fetch/tree/block/' + this.blok)
         this.$db.trees.clear()
         await this.$db.trees.bulkAdd(response.data.data.trees)
