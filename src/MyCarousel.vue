@@ -16,8 +16,8 @@
     class="text-white bg-black q-gallery-carousel"
   >
     <div
-      v-for="img in src"
-      :key="img"
+      v-for="(img, index) in src"
+      :key="index"
       slot="slide"
       class="no-padding row flex-center"
     >
@@ -44,7 +44,7 @@
       @mousemove.capture.stop
       @mouseend.capture.stop
     >
-      <div v-for="(img, index) in src" :key="img">
+      <div v-for="(img, index) in src" :key="index">
         <img
           :src="img"
           :class="{active: currentSlide === index}"
@@ -56,9 +56,8 @@
 </template>
 
 <script>
-import CarouselMixin from '../carousel/carousel-mixin'
-import { QCarousel } from '../carousel'
-import { QIcon } from '../icon'
+import { QCarousel, QIcon } from 'quasar'
+import CarouselMixin from './carousel-mixin'
 export default {
   name: 'my-carousel',
   components: {

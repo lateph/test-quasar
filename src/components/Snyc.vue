@@ -150,6 +150,12 @@ export default {
         this.$db.conditions.clear()
         await this.$db.conditions.bulkAdd(conditions)
         progress.model = 20
+
+        // table conditions
+        const pests = data.data.data.pests
+        this.$db.pests.clear()
+        await this.$db.pests.bulkAdd(pests)
+        progress.model = 25
         // table PT
         // let data = await this.$http.post('sync')
         const pts = data.data.data.organizations.PT
@@ -255,7 +261,7 @@ export default {
       catch (error) {
         if (error.response && error.response.status === 403) {
           Loading.hide()
-          this.login(2)
+          this.login()
         }
         else {
           Toast.create['negative']({
@@ -265,6 +271,7 @@ export default {
       }
     },
     async upload () {
+      let deleteKeyNewImage = []
       try {
         Loading.show('Uploading data lilit pohon')
         const dataLilit = await this.$store.dispatch('getUploadDataLilit')
@@ -309,7 +316,7 @@ export default {
 
         Loading.show('Uploading data identifikasi htp')
         const dataihtps = await this.$store.dispatch('getUploadDataIHtp')
-        await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
+        let dataIdentificatoin = await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
@@ -326,6 +333,43 @@ export default {
             flag: 1
           }
         }))
+
+        let totalImage = await this.$db.newihtpimages.count()
+        console.log('total new image ', totalImage)
+        Loading.show('Sinkornisasi gambar htp  ... ')
+        let insertNewImagePest = dataIdentificatoin.data.data.insert
+        let countImageHtp = 0
+        if (insertNewImagePest) {
+          // Object.keys(insertNewImagePest).forEach(async prop => {
+          for (var prop in insertNewImagePest) {
+            let id = insertNewImagePest[prop].id
+            let arToDelete = await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(prop)}).toArray()
+            console.log('mulai')
+            for (let row of arToDelete) {
+              let responsePostImagePest = await this.$http.post('maintain/tree-pest-image', querystring.stringify({
+                'pestImage[width]': row.width,
+                'pestImage[height]': row.height,
+                'pestImage[extension]': row.extension,
+                'pestImage[binaryData]': row.base64,
+                'pestImage[pestId]': row.pestId,
+                'pestImage[treePestIdentificationId]': id
+              }), {
+                headers: {
+                  'content-type': 'application/x-www-form-urlencoded'
+                }
+              })
+
+              console.log('delete')
+              await this.$db.newihtpimages.where('local_id').equals(row.local_id).delete()
+              countImageHtp++
+              Loading.show(`Sinkornisasi gambar htp  ${countImageHtp} / ${totalImage}... `)
+            }
+            console.log('crot kari 2')
+          }
+        }
+
+        console.log('crot kari')
+        insertNewImagePest = null
 
         Loading.show('Uploading data pengendalian htp')
         const dataphtps = await this.$store.dispatch('getUploadDataPHtp')
@@ -354,8 +398,9 @@ export default {
       }
       catch (error) {
         Loading.hide()
+        // await this.$db.newihtpimages.bulkDelete(deleteKeyNewImage)        
         if (error.response && error.response.status === 403) {
-          this.login()
+          this.login(2)
         }
         else {
           Toast.create['negative']({

@@ -13,7 +13,8 @@ const state = {
   sensuss: [],
   iHtps: [],
   pHtps: [],
-  conditions: []
+  conditions: [],
+  pests: []
 }
 
 const getters = {
@@ -43,6 +44,14 @@ const getters = {
   },
   getConditionOptions: (state) => {
     return state.conditions.map(x => {
+      return {
+        label: x.name,
+        value: x.id
+      }
+    })
+  },
+  getPestOptions: (state) => {
+    return state.pests.map(x => {
       return {
         label: x.name,
         value: x.id
@@ -80,6 +89,9 @@ const mutations = {
   },
   setCondition (state, conditions) {
     state.conditions = conditions
+  },
+  setPest (state, pests) {
+    state.pests = pests
   }
 }
 
@@ -93,6 +105,9 @@ const actions = {
 
         const conditions = await v.$db.conditions.toArray()
         commit('setCondition', conditions)
+
+        const pests = await v.$db.pests.toArray()
+        commit('setPest', pests)
 
         await dispatch('loadLilit')
         await dispatch('loadIHtp')
@@ -212,7 +227,7 @@ const actions = {
     return new Promise(async (resolve, reject) => {
       try {
         let user = LocalStorage.get.item('user')
-        await v.$db.ihtps.add({
+        let inserted = await v.$db.ihtps.add({
           keterangan: iHtp.keterangan,
           pohon_id: state.tree.id,
           checked_at: new Date().getTime(),
@@ -222,7 +237,7 @@ const actions = {
           flag: 2
         })
         await dispatch('loadIHtp')
-        resolve()
+        resolve(inserted)
       }
       catch (error) {
         reject(error)
