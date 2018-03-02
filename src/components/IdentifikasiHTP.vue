@@ -70,7 +70,6 @@ export default {
         vm.form.id = to.params.id
         let ihtp = vm.$store.getters.getNewIHtpById(to.params.id)
         vm.form.keterangan = ihtp.keterangan
-
         vm.$db.newihtpimages.where({'treePestIdentificationId': parseInt(to.params.id)}).each(row => {
           vm.newImages.push({
             width: row.width,
@@ -80,16 +79,18 @@ export default {
             pestId: row.pestId
           })
         })
-        vm.$db.ihtpimages.where({'treePestIdentificationId': parseInt(ihtp.id)}).toArray().then(rows => {
-          rows.forEach(row => {
-            vm.$db.fileimages.get(row.imageUrl).then(file => {
-              vm.editImages.push({
-                ...row,
-                ...file
+        if (ihtp.id) {
+          vm.$db.ihtpimages.where({'treePestIdentificationId': parseInt(ihtp.id)}).toArray().then(rows => {
+            rows.forEach(row => {
+              vm.$db.fileimages.get(row.imageUrl).then(file => {
+                vm.editImages.push({
+                  ...row,
+                  ...file
+                })
               })
             })
           })
-        })
+        }
       }
     })
   },
@@ -152,6 +153,18 @@ export default {
             keterangan: this.form.keterangan
           })
             .then((response) => {
+              this.$db.newihtpimages.where('treePestIdentificationId').equals(parseInt(this.form.id)).delete()
+              this.newImages.forEach(element => {
+                this.$db.newihtpimages.add({
+                  pestId: element.pestId,
+                  treePestIdentificationId: parseInt(this.form.id),
+                  base64: element.base64,
+                  width: element.width,
+                  height: element.height,
+                  extension: element.extension,
+                  flag: 2
+                })
+              })
               this.form.keterangan = ''
               this.$router.push('/audit')
             })

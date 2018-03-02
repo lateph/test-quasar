@@ -194,7 +194,8 @@ export default {
       }
     },
     async sync2 () {
-      Loading.show('Sinkornisasi data umum ... ')
+      this.$refs.selectBlokModal.close()
+      Loading.show({message: 'Sinkornisasi data umum ... '})
       try {
         if (this.block === null) {
           throw new Error('Pilih Blok')
@@ -202,7 +203,7 @@ export default {
         let response = await this.$http.post('fetch/tree/block/' + this.blok)
         this.$db.trees.clear()
         await this.$db.trees.bulkAdd(response.data.data.trees)
-        Loading.show('Sinkornisasi data lilit ... ')
+        Loading.show({message: 'Sinkornisasi data lilit ... '})
         const lilits = await this.$http.post('fetch/tree-girth/block/' + this.blok)
         this.$db.lilits.clear()
         await this.$db.lilits.bulkAdd(lilits.data.data.treeGirths.map(x => {
@@ -214,7 +215,7 @@ export default {
             flag: 1
           }
         }))
-        Loading.show('Sinkornisasi data sensus ... ')
+        Loading.show({message: 'Sinkornisasi data sensus ... '})
         const sensuss = await this.$http.post('fetch/tree-census/block/' + this.blok)
         this.$db.sensuss.clear()
         await this.$db.sensuss.bulkAdd(sensuss.data.data.treeCensuses.map(x => {
@@ -226,7 +227,7 @@ export default {
             flag: 1
           }
         }))
-        Loading.show('Sinkornisasi data identifikasi htp ... ')
+        Loading.show({message: 'Sinkornisasi data identifikasi htp ... '})
         const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + this.blok)
         this.$db.ihtps.clear()
         await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
@@ -238,7 +239,7 @@ export default {
             flag: 1
           }
         }))
-        Loading.show('Sinkornisasi data pengendalian htp ... ')
+        Loading.show({message: 'Sinkornisasi data pengendalian htp ... '})
         const phtps = await this.$http.post('fetch/tree-pest-control/block/' + this.blok)
         this.$db.phtps.clear()
         await this.$db.phtps.bulkAdd(phtps.data.data.treePestControls.map(x => {
@@ -252,7 +253,7 @@ export default {
         }))
         LocalStorage.set('blok', this.blok)
 
-        Loading.show('Sinkornisasi data Identification Image ... ')
+        Loading.show({message: 'Sinkornisasi data Identification Image ... '})
         const ihtpimages = await this.$http.post('fetch/tree-pest-image/block/' + this.blok)
         this.$db.ihtpimages.clear()
         await this.$db.ihtpimages.bulkAdd(ihtpimages.data.data.treePestImages.map(x => {
@@ -267,7 +268,7 @@ export default {
         let downloadpesttotal = ihtpimages.data.data.treePestImages.length
         let countdownloadpesttoal = 0
         for (let file in ihtpimages.data.data.treePestImages) {
-          Loading.show(`Downloading Image ... ${countdownloadpesttoal} / ${downloadpesttotal}`)
+          Loading.show({message: `Downloading Image ... ${countdownloadpesttoal} / ${downloadpesttotal}`})
           let url = ihtpimages.data.data.treePestImages[file].imageUrl
           let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
           if (rfile === undefined) {
@@ -284,7 +285,7 @@ export default {
           }
         }
 
-        this.$refs.selectBlokModal.close()
+        // this.$refs.selectBlokModal.close()
         Toast.create['positive']({
           html: 'Sinkornisasi data spesifik sukses'
         })
@@ -297,6 +298,7 @@ export default {
           this.login()
         }
         else {
+          this.$refs.selectBlokModal.open()
           Toast.create['negative']({
             html: error.message
           })
@@ -305,14 +307,14 @@ export default {
     },
     async upload () {
       try {
-        Loading.show('Uploading data lilit pohon')
+        Loading.show({message: 'Uploading data lilit pohon'})
         const dataLilit = await this.$store.dispatch('getUploadDataLilit')
         await this.$http.post('maintain/tree-girth', querystring.stringify(dataLilit), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
         })
-        Loading.show('Sinkornisasi data lilit ... ')
+        Loading.show({message: 'Sinkornisasi data lilit ... '})
         let blok = LocalStorage.get.item('blok')
         const lilits = await this.$http.post(`fetch/tree-girth/block/${blok}`)
         this.$db.lilits.clear()
@@ -326,14 +328,14 @@ export default {
           }
         }))
 
-        Loading.show('Uploading data sensus pohon')
+        Loading.show({message: 'Uploading data sensus pohon'})
         const dataSensus = await this.$store.dispatch('getUploadDataSensus')
         await this.$http.post('maintain/tree-census', querystring.stringify(dataSensus), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
         })
-        Loading.show('Sinkornisasi data Sensus ... ')
+        Loading.show({message: 'Sinkornisasi data Sensus ... '})
         const sensuss = await this.$http.post(`fetch/tree-census/block/${blok}`)
         this.$db.sensuss.clear()
         await this.$db.sensuss.bulkAdd(sensuss.data.data.treeCensuses.map(x => {
@@ -346,14 +348,36 @@ export default {
           }
         }))
 
-        Loading.show('Uploading data identifikasi htp')
+        Loading.show({message: `Sinkornisasi gambar htp`})
+        let ihtpsupdate = await this.$db.ihtps.where({flag: 3}).toArray()
+        for (let ihtpsxxx of ihtpsupdate) {
+          let arToDelete = await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(ihtpsxxx.local_id)}).toArray()
+          for (let row of arToDelete) {
+            await this.$http.post('maintain/tree-pest-image', querystring.stringify({
+              'pestImage[width]': row.width,
+              'pestImage[height]': row.height,
+              'pestImage[extension]': row.extension,
+              'pestImage[binaryData]': row.base64,
+              'pestImage[pestId]': row.pestId,
+              'pestImage[treePestIdentificationId]': ihtpsxxx.id
+            }), {
+              headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+              }
+            })
+
+            await this.$db.newihtpimages.where('local_id').equals(row.local_id).delete()
+          }
+        }
+
+        Loading.show({message: 'Uploading data identifikasi htp'})
         const dataihtps = await this.$store.dispatch('getUploadDataIHtp')
         let dataIdentificatoin = await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
         })
-        Loading.show('Sinkornisasi data  ... ')
+        Loading.show({message: 'Sinkornisasi data  ... '})
         const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + blok)
         this.$db.ihtps.clear()
         await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
@@ -368,14 +392,20 @@ export default {
 
         let totalImage = await this.$db.newihtpimages.count()
         console.log('total new image ', totalImage)
-        Loading.show('Sinkornisasi gambar htp  ... ')
+        Loading.show({message: 'Sinkornisasi gambar htp  ... '})
         let insertNewImagePest = dataIdentificatoin.data.data.insert
         let countImageHtp = 0
         if (insertNewImagePest) {
-          // Object.keys(insertNewImagePest).forEach(async prop => {
           for (var prop in insertNewImagePest) {
             let id = insertNewImagePest[prop].id
-            let arToDelete = await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(prop)}).toArray()
+            await this.$db.ihtps.update(`${id}`, {flag: 3})
+            let newihtp = await this.$db.ihtps.where({id: `${id}`}).first()
+            await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(prop)}).modify({'treePestIdentificationId': parseInt(newihtp.local_id)})
+          }
+          for (var propx in insertNewImagePest) {
+            let id = insertNewImagePest[propx].id
+            let newihtp = await this.$db.ihtps.where({id: `${id}`}).first()
+            let arToDelete = await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(newihtp.local_id)}).toArray()
             for (let row of arToDelete) {
               await this.$http.post('maintain/tree-pest-image', querystring.stringify({
                 'pestImage[width]': row.width,
@@ -392,21 +422,53 @@ export default {
 
               await this.$db.newihtpimages.where('local_id').equals(row.local_id).delete()
               countImageHtp++
-              Loading.show(`Sinkornisasi gambar htp  ${countImageHtp} / ${totalImage}... `)
+              Loading.show({message: `Sinkornisasi gambar htp  ${countImageHtp} / ${totalImage}... `})
             }
+            await this.$db.ihtps.update(`${id}`, {flag: 1})
+          }
+        }
+        insertNewImagePest = null
+
+        Loading.show({message: 'Sinkornisasi data Identification Image ... '})
+        const ihtpimages = await this.$http.post('fetch/tree-pest-image/block/' + blok)
+        this.$db.ihtpimages.clear()
+        await this.$db.ihtpimages.bulkAdd(ihtpimages.data.data.treePestImages.map(x => {
+          return {
+            id: x.id,
+            treePestIdentificationId: x.treePestIdentificationId,
+            pestId: x.pestId,
+            imageUrl: x.imageUrl,
+            flag: 1
+          }
+        }))
+        let downloadpesttotal = ihtpimages.data.data.treePestImages.length
+        let countdownloadpesttoal = 0
+        for (let file in ihtpimages.data.data.treePestImages) {
+          Loading.show({message: `Downloading Image ... ${countdownloadpesttoal} / ${downloadpesttotal}`})
+          let url = ihtpimages.data.data.treePestImages[file].imageUrl
+          let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
+          if (rfile === undefined) {
+            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}/${url}`, { responseType: 'arraybuffer' })
+            let image = btoa(
+              new Uint8Array(datadownloadimg.data)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            )
+            let base64data = `data:${datadownloadimg.headers['content-type'].toLowerCase()};base64,${image}`
+            this.$db.fileimages.add({
+              imageUrl: url,
+              base64: base64data
+            })
           }
         }
 
-        insertNewImagePest = null
-
-        Loading.show('Uploading data pengendalian htp')
+        Loading.show({message: 'Uploading data pengendalian htp'})
         const dataphtps = await this.$store.dispatch('getUploadDataPHtp')
         await this.$http.post('maintain/tree-pest-control', querystring.stringify(dataphtps), {
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
           }
         })
-        Loading.show('Sinkornisasi data  ... ')
+        Loading.show({message: 'Sinkornisasi data  ... '})
         const phtps = await this.$http.post('fetch/tree-pest-control/block/' + blok)
         this.$db.phtps.clear()
         await this.$db.phtps.bulkAdd(phtps.data.data.treePestControls.map(x => {
