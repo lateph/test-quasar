@@ -283,6 +283,7 @@ export default {
               base64: base64data
             })
           }
+          countdownloadpesttoal++
         }
 
         // this.$refs.selectBlokModal.close()
@@ -428,6 +429,17 @@ export default {
           }
         }
         insertNewImagePest = null
+
+        let deleteimagepests = await this.$db.ihtpimages.where({flag: 4}).toArray()
+        for (let row of deleteimagepests) {
+          await this.$http.post('maintain/tree-pest-image-delete', querystring.stringify({
+            'deletedTreePestImageId[]': row.id
+          }), {
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded'
+            }
+          })
+        }
 
         Loading.show({message: 'Sinkornisasi data Identification Image ... '})
         const ihtpimages = await this.$http.post('fetch/tree-pest-image/block/' + blok)

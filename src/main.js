@@ -49,7 +49,7 @@ export default new VueIdb({
   schemas: [
     { conditions: 'id, name, updatedAt' },
     { pests: 'id, name, updatedAt, createdAt' },
-    { ihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl' },
+    { ihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, flag' },
     { fileimages: 'imageUrl, base64' },
     { newihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, base64, width, height, extension,flag' }, // treePestIdentificationId = local_id dari ihtps
     { pts: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },

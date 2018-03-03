@@ -100,14 +100,33 @@ export default {
     },
     scanBarCode () {
       this.$refs.layout.hideLeft()
-      let barcode = 'AAS.GAAS02F010001'
-      this.$store.dispatch('loadTree', barcode).then(() => {
-        this.$router.push('/audit')
-      }).catch(() => {
-        Toast.create['negative']({
-          html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+      if (cordova && cordova.plugins) {
+        cordova.plugins.barcodeScanner.scan(
+          result => {
+            let barcode = result.text
+            this.$store.dispatch('loadTree', barcode).then(() => {
+              this.$router.push('/audit')
+            }).catch(() => {
+              Toast.create['negative']({
+                html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+              })
+            })
+          },
+          function (error) {
+            alert('Scanning failed: ' + error)
+          }
+        )
+      }
+      else {
+        let barcode = 'AAS.GAAS02F010001'
+        this.$store.dispatch('loadTree', barcode).then(() => {
+          this.$router.push('/audit')
+        }).catch(() => {
+          Toast.create['negative']({
+            html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+          })
         })
-      })
+      }
     }
   }
 }

@@ -1,13 +1,13 @@
 <template>
   <div class="layout-padding docs-btn row justify-center">
-    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/ihtp')">Identifikasi HTP</q-btn> -->
-    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/phtp')">Pengendalian HTP</q-btn> -->
-    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.replace('/sensus')">Sensus</q-btn> -->
+    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/ihtp')">Identifikasi HTP</q-btn> -->
+    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/phtp')">Pengendalian HTP</q-btn> -->
+    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/sensus')">Sensus</q-btn> -->
 
     <q-list inset-separator class="audit-collapsible">
       <q-collapsible icon="track changes" label="Ukur Lilit Batang" :sublabel="getNewLilit.length + ' New Data'">
         <div>    
-          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/lilit/')">Tambah</q-btn>
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/lilit/')">Tambah</q-btn>
           <q-data-table
             :data="getNewLilit"
             :config="config"
@@ -34,7 +34,7 @@
 
             <!-- Custom renderer when user selected one or more rows -->
             <div slot="selection" slot-scope="selection">
-              <q-btn color="primary" @click="$router.replace('/lilit/' + selection.rows[0].data.local_id)">
+              <q-btn color="primary" @click="$router.push('/lilit/' + selection.rows[0].data.local_id)">
                 <i>edit</i>
               </q-btn>
               <q-btn color="primary" @click="deleteLilit(selection.rows[0].data.local_id)">
@@ -46,7 +46,7 @@
       </q-collapsible>
       <q-collapsible icon="zoom in" label="Identifikasi HTP" :sublabel="getNewIHtp.length + ' New Data'">
         <div>    
-          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/ihtp/')">Tambah</q-btn>
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/ihtp/')">Tambah</q-btn>
           <q-data-table
             :data="getNewIHtp"
             :config="config2"
@@ -74,7 +74,7 @@
 
             <!-- Custom renderer when user selected one or more rows -->
             <div slot="selection" slot-scope="selection">
-              <q-btn color="primary" @click="$router.replace('/ihtp/' + selection.rows[0].data.local_id)">
+              <q-btn color="primary" @click="$router.push('/ihtp/' + selection.rows[0].data.local_id)">
                 <i>edit</i>
               </q-btn>
               <q-btn color="primary" @click="deleteIHtp(selection.rows[0].data.local_id)">
@@ -86,7 +86,7 @@
       </q-collapsible>
       <q-collapsible icon="build" label="Pengendalian HTP" :sublabel="getNewPHtp.length + ' New Data'">
         <div>    
-          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/phtp/')">Tambah</q-btn>
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/phtp/')">Tambah</q-btn>
           <q-data-table
             :data="getNewPHtp"
             :config="config2"
@@ -114,7 +114,7 @@
 
             <!-- Custom renderer when user selected one or more rows -->
             <div slot="selection" slot-scope="selection">
-              <q-btn color="primary" @click="$router.replace('/phtp/' + selection.rows[0].data.local_id)">
+              <q-btn color="primary" @click="$router.push('/phtp/' + selection.rows[0].data.local_id)">
                 <i>edit</i>
               </q-btn>
               <q-btn color="primary" @click="deletePHtp(selection.rows[0].data.local_id)">
@@ -126,7 +126,7 @@
       </q-collapsible>
       <q-collapsible icon="description" label="Sensus" :sublabel="getNewSensus.length + ' New Data'">
         <div>    
-          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.replace('/sensus/')">Tambah</q-btn>
+          <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/sensus/')">Tambah</q-btn>
           <q-data-table
             :data="getNewSensus"
             :config="config3"
@@ -153,7 +153,7 @@
 
             <!-- Custom renderer when user selected one or more rows -->
             <div slot="selection" slot-scope="selection">
-              <q-btn color="primary" @click="$router.replace('/sensus/' + selection.rows[0].data.local_id)">
+              <q-btn color="primary" @click="$router.push('/sensus/' + selection.rows[0].data.local_id)">
                 <i>edit</i>
               </q-btn>
               <q-btn color="primary" @click="deleteSensus(selection.rows[0].data.local_id)">
