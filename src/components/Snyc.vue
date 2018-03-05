@@ -188,6 +188,7 @@ export default {
         })
       }
       catch (error) {
+        console.log(error)
         Toast.create['negative']({
           html: 'Sinkornisasi data gagal mohon cek storage / koneksi anda'
         })
@@ -200,6 +201,25 @@ export default {
         if (this.block === null) {
           throw new Error('Pilih Blok')
         }
+
+        let responseSchedule = await this.$http.post('fetch/schedule/block/' + this.blok)
+        Loading.show({message: 'Sinkornisasi data schedule ... '})
+        this.$db.schedules.clear()
+        await this.$db.schedules.bulkAdd(responseSchedule.data.data)
+
+        if (window.cordova && responseSchedule.data.data.length > 0) {
+          cordova.plugins.notification.local.cancelAll(() => {
+            cordova.plugins.notification.local.schedule(responseSchedule.data.data.map(row => {
+              var now = new Date(row.startDate).getTime()
+              return {
+                id: row.id,
+                text: row.activity,
+                trigger: { at: new Date(now + 7 * 60 * 60 * 1000) }
+              }
+            }))
+          }, this)
+        }
+
         let response = await this.$http.post('fetch/tree/block/' + this.blok)
         this.$db.trees.clear()
         await this.$db.trees.bulkAdd(response.data.data.trees)
@@ -565,6 +585,8 @@ export default {
       })
     },
     async logout () {
+      var mydate = new Date('2014-04-03')
+      console.log(mydate.toDateString())
       this.pt = 'AAS'
       const timeout = setTimeout(() => {
         clearInterval(timeout)

@@ -213,7 +213,7 @@ export default {
                 })
               })
               this.form.keterangan = ''
-              this.$router.push('/audit')
+              window.history.back()
             })
             .catch((error) => {
               Toast.create(error.message)
@@ -237,7 +237,7 @@ export default {
                 })
               })
               this.form.keterangan = ''
-              this.$router.push('/audit')
+              window.history.back()
             })
             .catch(() => {
               Toast.create('Please review fields again.')

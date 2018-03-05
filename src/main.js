@@ -48,6 +48,7 @@ export default new VueIdb({
   database: 'pohon',
   schemas: [
     { conditions: 'id, name, updatedAt' },
+    { schedules: 'id, companyName, estateName, divisionName, blockName, activity, startDate, endDate, target, productionQuantity, productionMeasurement, materialType, materialMeasurement' },
     { pests: 'id, name, updatedAt, createdAt' },
     { ihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, flag' },
     { fileimages: 'imageUrl, base64' },
@@ -73,6 +74,11 @@ Quasar.start(() => {
     render: h => h(require('./App').default),
     created () {
       router.push('/snyc')
+      document.addEventListener('deviceReady', () => {
+        cordova.plugins.notification.local.on('click', function (notification, state) {
+          router.push('/schedule')
+        }, this)
+      }, false)
     }
   })
 })

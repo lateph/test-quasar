@@ -41,12 +41,12 @@ export default new VueRouter({
           component: load('Snyc')
         },
         {
-          path: 'audit',
-          component: load('Audit')
-        },
-        {
           path: '/schedule',
           component: load('Schedule')
+        },
+        {
+          path: '/tree',
+          component: load('Tree')
         },
         {
           path: 'profile',
@@ -57,6 +57,10 @@ export default new VueRouter({
           component: load('Table')
         }
       ]
+    },
+    {
+      path: '/audit',
+      component: load('Audit')
     },
     {
       path: '/lilit/:id?',

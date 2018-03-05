@@ -1,8 +1,16 @@
 <template>
-  <div class="layout-padding docs-btn row justify-center">
+  <q-layout ref="layout" view="hHr LpR lFf" class="layout-padding docs-input row justify-center" style="width: 100%">
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/ihtp')">Identifikasi HTP</q-btn> -->
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/phtp')">Pengendalian HTP</q-btn> -->
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/sensus')">Sensus</q-btn> -->
+    <q-toolbar slot="header">
+      <q-btn flat v-go-back=" '/tree' ">
+        <q-icon name="keyboard arrow left" />
+      </q-btn>
+      <q-toolbar-title>
+        Audit
+      </q-toolbar-title>
+    </q-toolbar>
 
     <q-list inset-separator class="audit-collapsible">
       <q-collapsible icon="track changes" label="Ukur Lilit Batang" :sublabel="getNewLilit.length + ' New Data'">
@@ -164,21 +172,27 @@
         </div>
       </q-collapsible>
     </q-list>
-  </div>
+  </q-layout>
 </template>
 
 <script>
-import { QBtn, QIcon, QList, QCollapsible, QDataTable } from 'quasar'
+import { QLayout, QToolbar, QToolbarTitle, QBtn, QIcon, QList, QCollapsible, QDataTable, GoBack } from 'quasar'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 
 export default {
   components: {
+    QLayout,
+    QToolbar,
+    QToolbarTitle,
     QBtn,
     QIcon,
     QList,
     QCollapsible,
     QDataTable
+  },
+  directives: {
+    GoBack
   },
   data () {
     return {
@@ -340,7 +354,7 @@ export default {
   .q-btn
     margin 5px
   .audit-collapsible
-    width 100%
+    width 90vw
   .responsive
     .setnowrap
       white-space pre-line !important

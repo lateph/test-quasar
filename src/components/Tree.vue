@@ -42,7 +42,8 @@ import {
   QIcon,
   QTooltip,
   QCollapsible,
-  clone
+  clone,
+  Toast
 } from 'quasar'
 export default {
   components: {
@@ -77,8 +78,17 @@ export default {
     selection (number, rows) {
       console.log(`selected ${number}: ${rows}`)
     },
-    rowClick (row) {
-      console.log('clicked on a row', row)
+    // rowClick (row) {
+    //   console.log('clicked on a row', row)
+    // },
+    move (cell) {
+      this.$store.dispatch('loadTree', cell.row.code).then(() => {
+        this.$router.push('/audit')
+      }).catch(() => {
+        Toast.create['negative']({
+          html: `Data Pohon untuk barcode : ${cell.row.code} tidak ditemukan`
+        })
+      })
     }
   },
   beforeDestroy () {
@@ -92,7 +102,7 @@ export default {
         refresh: true,
         noHeader: false,
         columnPicker: true,
-        leftStickyColumns: 0,
+        leftStickyColumns: 1,
         rightStickyColumns: 0,
         bodyStyle: {
           maxHeight: 'auto'
@@ -107,12 +117,20 @@ export default {
       },
       columns: [
         {
-          label: 'ID',
-          field: 'id',
+          label: '-',
+          field: 'plantedAt',
           filter: true,
           sort: false,
           type: 'string',
           width: '70px'
+        },
+        {
+          label: 'Code',
+          field: 'code',
+          filter: true,
+          sort: true,
+          type: 'string',
+          width: '200px'
         },
         {
           label: 'Company',
@@ -128,7 +146,7 @@ export default {
           filter: true,
           sort: true,
           type: 'string',
-          width: '200px'
+          width: '250px'
         },
         {
           label: 'Divisi',
@@ -147,59 +165,12 @@ export default {
           width: '250px'
         },
         {
-          label: 'Kegiatan',
-          field: 'activity',
-          filter: true,
-          sort: true,
-          type: 'string',
-          width: '250px'
-        },
-        {
-          label: 'Mulai',
-          field: 'startDate',
-          filter: true,
-          sort: true,
-          type: 'string',
-          width: '120px'
-        },
-        {
-          label: 'Selesai',
-          field: 'endDate',
-          filter: true,
-          sort: true,
-          type: 'string',
-          width: '120px'
-        },
-        {
-          label: 'Target (Hektar)',
-          field: 'target',
+          label: 'Number',
+          field: 'number',
           filter: true,
           sort: true,
           type: 'number',
-          width: '170px'
-        },
-        {
-          label: 'Jumlah Produksi',
-          field: 'productionQuantity',
-          filter: true,
-          sort: true,
-          type: 'string',
-          width: '120px',
-          format (value, row) {
-            console.log('val', value)
-            return `${row.productionQuantity} ${row.productionMeasurement ? row.productionMeasurement : ''}`
-          }
-        },
-        {
-          label: 'Material',
-          field: 'materialQuantity',
-          filter: true,
-          sort: true,
-          type: 'string',
-          width: '250px',
-          format (value, row) {
-            return `${row.materialQuantity} ${row.materialMeasurement} ${row.materialType}`
-          }
+          width: '120px'
         }
       ],
       pagination: true,
@@ -207,11 +178,6 @@ export default {
       bodyHeightProp: 'maxHeight',
       bodyHeight: 500
     }
-  },
-  mounted: function () {
-    this.$db.schedules.toArray().then(rows => {
-      this.table = rows
-    })
   },
   watch: {
     pagination (value) {
@@ -239,6 +205,11 @@ export default {
       }
       this.config.bodyStyle = style
     }
+  },
+  mounted: function () {
+    this.$db.trees.toArray().then(rows => {
+      this.table = rows
+    })
   }
 }
 </script>

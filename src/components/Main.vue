@@ -16,6 +16,14 @@
         Quasar App
         <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
       </q-toolbar-title>
+
+      <q-btn
+        flat
+        @click="scan()"
+        v-if="$router.history.current.path === '/tree'"
+      >
+        <q-icon name="settings overscan" />
+      </q-btn>
     </q-toolbar>
 
     <div slot="left">
@@ -31,10 +39,10 @@
           <q-item-side icon="home" />
           <q-item-main label="Home"  />
         </q-side-link>
-        <q-item item @click="scanBarCode()">
+        <q-side-link item to="/tree">
           <q-item-side icon="done all" />
           <q-item-main label="Audit" sublabel="" />
-        </q-item>
+        </q-side-link>
         <q-side-link to="/schedule" item>
           <q-item-side icon="schedule" />
           <q-item-main label="Jadwal" sublabel="" />
@@ -98,9 +106,9 @@ export default {
     launch (url) {
       openURL(url)
     },
-    scanBarCode () {
+    scan () {
       this.$refs.layout.hideLeft()
-      if (cordova && cordova.plugins) {
+      if (window.cordova !== undefined) {
         cordova.plugins.barcodeScanner.scan(
           result => {
             let barcode = result.text
