@@ -122,7 +122,9 @@ export default {
       const data2 = await this.$store.dispatch('getUploadDataIHtp')
       const data3 = await this.$store.dispatch('getUploadDataPHtp')
       const data4 = await this.$store.dispatch('getUploadDataSensus')
-      if (Object.keys(data1).length > 0 || Object.keys(data2).length > 0 || Object.keys(data3).length > 0 || Object.keys(data4).length > 0) {
+      const data6 = (await this.$db.treeimages.where({flag: 2}).count()) + (await this.$db.treeimages.where({flag: 4}).count())
+
+      if (Object.keys(data1).length > 0 || Object.keys(data2).length > 0 || Object.keys(data3).length > 0 || Object.keys(data4).length > 0 || data6 > 0) {
         Toast.create['negative']({
           html: 'You have new data please upload data to server first'
         })
@@ -235,6 +237,39 @@ export default {
             flag: 1
           }
         }))
+
+        Loading.show({message: 'Sinkornisasi gambar pohon ... '})
+        const treeimages = await this.$http.post('fetch/tree-image/block/' + this.blok)
+        this.$db.treeimages.clear()
+        await this.$db.treeimages.bulkAdd(treeimages.data.data.treeImages.map(x => {
+          return {
+            id: x.id,
+            treeId: x.treeId,
+            imageUrl: x.imageUrl,
+            flag: 1
+          }
+        }))
+        let downloadtreeimagetotal = treeimages.data.data.treeImages.length
+        let countdownloadimagetreetoal = 0
+        for (let file in treeimages.data.data.treeImages) {
+          Loading.show({message: `Downloading Image ... ${countdownloadimagetreetoal} / ${downloadtreeimagetotal}`})
+          let url = treeimages.data.data.treeImages[file].imageUrl
+          let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
+          if (rfile === undefined) {
+            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}${url}`, { responseType: 'arraybuffer' })
+            let image = btoa(
+              new Uint8Array(datadownloadimg.data)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            )
+            let base64data = `data:${datadownloadimg.headers['content-type'].toLowerCase()};base64,${image}`
+            this.$db.fileimages.add({
+              imageUrl: url,
+              base64: base64data
+            })
+          }
+          countdownloadimagetreetoal++
+        }
+
         Loading.show({message: 'Sinkornisasi data sensus ... '})
         const sensuss = await this.$http.post('fetch/tree-census/block/' + this.blok)
         this.$db.sensuss.clear()
@@ -292,7 +327,7 @@ export default {
           let url = ihtpimages.data.data.treePestImages[file].imageUrl
           let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
           if (rfile === undefined) {
-            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}/${url}`, { responseType: 'arraybuffer' })
+            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}${url}`, { responseType: 'arraybuffer' })
             let image = btoa(
               new Uint8Array(datadownloadimg.data)
                 .reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -480,7 +515,7 @@ export default {
           let url = ihtpimages.data.data.treePestImages[file].imageUrl
           let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
           if (rfile === undefined) {
-            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}/${url}`, { responseType: 'arraybuffer' })
+            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}${url}`, { responseType: 'arraybuffer' })
             let image = btoa(
               new Uint8Array(datadownloadimg.data)
                 .reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -512,6 +547,73 @@ export default {
             flag: 1
           }
         }))
+
+        let totalImagetree = await this.$db.treeimages.where({flag: 2}).count()
+        Loading.show({message: 'Sinkornisasi gambar htp  ... '})
+        let countImagetree = 0
+        let imagestreeupload = await this.$db.treeimages.where({flag: 2}).toArray()
+        for (let row of imagestreeupload) {
+          await this.$http.post('maintain/tree-image', querystring.stringify({
+            'treeImage[width]': row.width,
+            'treeImage[height]': row.height,
+            'treeImage[extension]': row.extension,
+            'treeImage[binaryData]': row.base64,
+            'treeImage[treeId]': row.treeId
+          }), {
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded'
+            }
+          })
+
+          await this.$db.treeimages.where('local_id').equals(row.local_id).delete()
+          countImagetree++
+          Loading.show({message: `Sinkornisasi gambar pohon  ${countImagetree} / ${totalImagetree}... `})
+        }
+
+        insertNewImagePest = null
+
+        let deleteimagetree = await this.$db.treeimages.where({flag: 4}).toArray()
+        for (let row of deleteimagetree) {
+          await this.$http.post('maintain/tree-image-delete', querystring.stringify({
+            'deletedTreeImageId[]': row.id
+          }), {
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded'
+            }
+          })
+        }
+
+        Loading.show({message: 'Sinkornisasi gambar pohon ... '})
+        const treeimages = await this.$http.post('fetch/tree-image/block/' + blok)
+        this.$db.treeimages.clear()
+        await this.$db.treeimages.bulkAdd(treeimages.data.data.treeImages.map(x => {
+          return {
+            id: x.id,
+            treeId: x.treeId,
+            imageUrl: x.imageUrl,
+            flag: 1
+          }
+        }))
+        let downloadtreeimagetotal = treeimages.data.data.treeImages.length
+        let countdownloadimagetreetoal = 0
+        for (let file in treeimages.data.data.treeImages) {
+          Loading.show({message: `Downloading Image ... ${countdownloadimagetreetoal} / ${downloadtreeimagetotal}`})
+          let url = treeimages.data.data.treeImages[file].imageUrl
+          let rfile = await this.$db.fileimages.where({imageUrl: url}).first()
+          if (rfile === undefined) {
+            let datadownloadimg = await this.$http.get(`${this.$http.defaults.baseURL}${url}`, { responseType: 'arraybuffer' })
+            let image = btoa(
+              new Uint8Array(datadownloadimg.data)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            )
+            let base64data = `data:${datadownloadimg.headers['content-type'].toLowerCase()};base64,${image}`
+            this.$db.fileimages.add({
+              imageUrl: url,
+              base64: base64data
+            })
+          }
+          countdownloadimagetreetoal++
+        }
 
         Loading.hide()
         Toast.create['positive']({

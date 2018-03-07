@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 const state = {
   tree: null,
+  treeimages: [],
   code: null,
   id: null,
   lilits: [],
@@ -92,6 +93,9 @@ const mutations = {
   },
   setPest (state, pests) {
     state.pests = pests
+  },
+  setTreeimages (state, treeimages) {
+    state.treeimages = treeimages.filter(row => row.flag !== 4)
   }
 }
 
@@ -108,6 +112,8 @@ const actions = {
 
         const pests = await v.$db.pests.toArray()
         commit('setPest', pests)
+
+        dispatch('reloadtreeimage')
 
         await dispatch('loadLilit')
         await dispatch('loadIHtp')
@@ -507,6 +513,39 @@ const actions = {
         reject(error)
       }
     })
+  },
+  deleteTreeImage ({ commit, state, dispatch, getters }, id) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let editc = await v.$db.treeimages.where({local_id: id}).first()
+        if (editc.flag === 2) {
+          await v.$db.treeimages.where({local_id: id}).delete()
+        }
+        else {
+          await v.$db.treeimages.where({local_id: id}).modify({
+            flag: 4
+          })
+        }
+        dispatch('reloadtreeimage')
+        resolve()
+      }
+      catch (error) {
+        reject(error)
+      }
+    })
+  },
+  async reloadtreeimage ({ commit, state, dispatch, getters }) {
+    const treeimages = await v.$db.treeimages.where({treeId: state.tree.id}).toArray()
+    for (let index in treeimages) {
+      if (treeimages[index].flag === 1) {
+        await v.$db.fileimages.get(treeimages[index].imageUrl).then(file => {
+          if (file) {
+            treeimages[index].base64 = file.base64
+          }
+        })
+      }
+    }
+    commit('setTreeimages', treeimages)
   },
   loadSensus ({ commit, state }, code) {
     return new Promise(async (resolve, reject) => {

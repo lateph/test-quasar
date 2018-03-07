@@ -22,7 +22,7 @@
         @click="scan()"
         v-if="$router.history.current.path === '/tree'"
       >
-        <q-icon name="settings overscan" />
+        Scan QR Code
       </q-btn>
     </q-toolbar>
 
@@ -41,11 +41,23 @@
         </q-side-link>
         <q-side-link item to="/tree">
           <q-item-side icon="done all" />
-          <q-item-main label="Audit" sublabel="" />
+          <q-item-main label="Data Pohon" sublabel="" />
+        </q-side-link>
+        <q-side-link item to="/tree">
+          <q-item-side icon="done all" />
+          <q-item-main label="Ukur Lilit Batang" sublabel="" />
+        </q-side-link>
+        <q-side-link item to="/tree">
+          <q-item-side icon="done all" />
+          <q-item-main label="Identifikasi HPT" sublabel="" />
+        </q-side-link>
+        <q-side-link item to="/tree">
+          <q-item-side icon="done all" />
+          <q-item-main label="Sensus Kondisi Pohon" sublabel="" />
         </q-side-link>
         <q-side-link to="/schedule" item>
           <q-item-side icon="schedule" />
-          <q-item-main label="Jadwal" sublabel="" />
+          <q-item-main label="JadJadwal Kegiatanwal" sublabel="" />
         </q-side-link>   
       </q-list>
     </div>

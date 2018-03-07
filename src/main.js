@@ -20,6 +20,7 @@ import VueCordova from 'vue-cordova'
 import VueIdb from 'vue-idb'
 import store from './store'
 import Vuelidate from 'vuelidate'
+import VueImg from 'v-img'
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')
@@ -42,6 +43,7 @@ Vue.use(VueCordova, {
 })
 Vue.use(VueLazyload)
 Vue.use(Vuelidate)
+Vue.use(VueImg)
 
 export default new VueIdb({
   version: 3,
@@ -52,6 +54,7 @@ export default new VueIdb({
     { pests: 'id, name, updatedAt, createdAt' },
     { ihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, flag' },
     { fileimages: 'imageUrl, base64' },
+    { treeimages: '++local_id, id, treeId, imageUrl, flag, width, height, extension, base64' },
     { newihtpimages: '++local_id, id, pestId, treePestIdentificationId, updatedAt, imageUrl, base64, width, height, extension,flag' }, // treePestIdentificationId = local_id dari ihtps
     { pts: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { kebuns: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
