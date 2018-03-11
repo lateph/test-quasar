@@ -83,7 +83,7 @@ export default {
     // },
     move (cell) {
       this.$store.dispatch('loadTree', cell.row.code).then(() => {
-        this.$router.push('/audit')
+        this.$router.push('/audit/' + this.$route.params.id)
       }).catch(() => {
         Toast.create['negative']({
           html: `Data Pohon untuk barcode : ${cell.row.code} tidak ditemukan`

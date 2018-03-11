@@ -45,7 +45,7 @@ export default new VueRouter({
           component: load('Schedule')
         },
         {
-          path: '/tree',
+          path: '/tree/:id?',
           component: load('Tree')
         },
         {
@@ -59,7 +59,7 @@ export default new VueRouter({
       ]
     },
     {
-      path: '/audit',
+      path: '/audit/:id?',
       component: load('Audit')
     },
     {

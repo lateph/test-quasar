@@ -4,11 +4,23 @@
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/phtp')">Pengendalian HTP</q-btn> -->
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/sensus')">Sensus</q-btn> -->
     <q-toolbar slot="header">
-      <q-btn flat v-go-back=" '/tree' ">
+      <q-btn flat @click="goBack()">
         <q-icon name="keyboard arrow left" />
       </q-btn>
-      <q-toolbar-title>
-        Audit
+      <q-toolbar-title v-if="$route.params.id === '1'">
+        Detail Pohon
+      </q-toolbar-title>
+      <q-toolbar-title v-if="$route.params.id === '2'">
+        Lilit Pohon
+      </q-toolbar-title>
+      <q-toolbar-title v-if="$route.params.id === '3'">
+        Identifikasi HPT
+      </q-toolbar-title>
+      <q-toolbar-title v-if="$route.params.id === '4'">
+        Pengendalian HPT
+      </q-toolbar-title>
+      <q-toolbar-title v-if="$route.params.id === '5'">
+        Sensus
       </q-toolbar-title>
     </q-toolbar>
 
@@ -23,7 +35,7 @@
             <q-item-tile sublabel>{{tree.code}}</q-item-tile>
           </q-item-main>
         </q-item>
-        <q-item>
+        <q-item v-if="$route.params.id === '1'">
           <q-item-side>
             <q-item-tile color="red" icon="view quilt" />
           </q-item-side>
@@ -32,7 +44,7 @@
             <q-item-tile sublabel>{{tree.blockCode}}</q-item-tile>
           </q-item-main>
         </q-item>
-        <q-item>
+        <q-item v-if="$route.params.id === '1'">
           <q-item-side>
             <q-item-tile color="amber" icon="location on" />
           </q-item-side>
@@ -51,8 +63,8 @@
           </q-item-main>
         </q-item>
       </q-list>
-      <q-card-separator />
-      <q-list separator class="audit-collapsible">
+      <q-card-separator  v-if="$route.params.id === '1'"/>
+      <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
         <q-collapsible icon="track changes" label="Gambar" :sublabel="treeimages.length + ' New Data'">
           <q-btn color="primary" class="full-width" icon="playlist add" @click="tambahGambar()">Tambah</q-btn>          
           <div class="parent-galery-audit">    
@@ -68,166 +80,159 @@
             </div>
           </div>
         </q-collapsible>
-        <q-collapsible icon="track changes" label="Ukur Lilit Batang" :sublabel="getNewLilit.length + ' New Data'">
-          <div>    
-            <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/lilit/')">Tambah</q-btn>
-            <q-data-table
-              :data="getNewLilit"
-              :config="config"
-              :columns="columns"
-            >
-              <!-- Custom renderer for "message" column -->
-              <div slot="col-message" slot-scope="cell">
-                <span class="light-paragraph">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "source" column -->
-              <div slot="col-source" slot-scope="cell">
-                <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
-                  Audit
-                  <q-tooltip>Some data</q-tooltip>
-                </span>
-                <span v-else class="label text-white bg-negative">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "action" column with button for custom action -->
-              <div slot='col-action' slot-scope='cell'>
-                <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
-              </div>
-
-              <!-- Custom renderer when user selected one or more rows -->
-              <div slot="selection" slot-scope="selection">
-                <q-btn color="primary" @click="$router.push('/lilit/' + selection.rows[0].data.local_id)">
-                  <i>edit</i>
-                </q-btn>
-                <q-btn color="primary" @click="deleteLilit(selection.rows[0].data.local_id)">
-                  <i>delete</i>
-                </q-btn>
-              </div>
-            </q-data-table>
-          </div>
-        </q-collapsible>
-        <q-collapsible icon="zoom in" label="Identifikasi HTP" :sublabel="getNewIHtp.length + ' New Data'">
-          <div>    
-            <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/ihtp/')">Tambah</q-btn>
-            <q-data-table
-              :data="getNewIHtp"
-              :config="config2"
-              :columns="columnsIHtps"
-              class="set-table-wrap"
-            >
-              <!-- Custom renderer for "message" column -->
-              <div slot="col-message" slot-scope="cell">
-                <span class="light-paragraph">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "source" column -->
-              <div slot="col-source" slot-scope="cell">
-                <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
-                  Audit
-                  <q-tooltip>Some data</q-tooltip>
-                </span>
-                <span v-else class="label text-white bg-negative">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "action" column with button for custom action -->
-              <div slot='col-action' slot-scope='cell'>
-                <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
-              </div>
-
-              <!-- Custom renderer when user selected one or more rows -->
-              <div slot="selection" slot-scope="selection">
-                <q-btn color="primary" @click="$router.push('/ihtp/' + selection.rows[0].data.local_id)">
-                  <i>edit</i>
-                </q-btn>
-                <q-btn color="primary" @click="deleteIHtp(selection.rows[0].data.local_id)">
-                  <i>delete</i>
-                </q-btn>
-              </div>
-            </q-data-table>
-          </div>
-        </q-collapsible>
-        <q-collapsible icon="build" label="Pengendalian HTP" :sublabel="getNewPHtp.length + ' New Data'">
-          <div>    
-            <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/phtp/')">Tambah</q-btn>
-            <q-data-table
-              :data="getNewPHtp"
-              :config="config2"
-              :columns="columnsPHtps"
-              class="set-table-wrap"
-            >
-              <!-- Custom renderer for "message" column -->
-              <div slot="col-message" slot-scope="cell">
-                <span class="light-paragraph">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "source" column -->
-              <div slot="col-source" slot-scope="cell">
-                <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
-                  Audit
-                  <q-tooltip>Some data</q-tooltip>
-                </span>
-                <span v-else class="label text-white bg-negative">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "action" column with button for custom action -->
-              <div slot='col-action' slot-scope='cell'>
-                <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
-              </div>
-
-              <!-- Custom renderer when user selected one or more rows -->
-              <div slot="selection" slot-scope="selection">
-                <q-btn color="primary" @click="$router.push('/phtp/' + selection.rows[0].data.local_id)">
-                  <i>edit</i>
-                </q-btn>
-                <q-btn color="primary" @click="deletePHtp(selection.rows[0].data.local_id)">
-                  <i>delete</i>
-                </q-btn>
-              </div>
-            </q-data-table>
-          </div>
-        </q-collapsible>
-        <q-collapsible icon="description" label="Sensus" :sublabel="getNewSensus.length + ' New Data'">
-          <div>    
-            <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/sensus/')">Tambah</q-btn>
-            <q-data-table
-              :data="getNewSensus"
-              :config="config3"
-              :columns="columnsSensus"
-            >
-              <!-- Custom renderer for "message" column -->
-              <div slot="col-message" slot-scope="cell">
-                <span class="light-paragraph">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "source" column -->
-              <div slot="col-source" slot-scope="cell">
-                <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
-                  Audit
-                  <q-tooltip>Some data</q-tooltip>
-                </span>
-                <span v-else class="label text-white bg-negative">{{cell.data}}</span>
-              </div>
-
-              <!-- Custom renderer for "action" column with button for custom action -->
-              <div slot='col-action' slot-scope='cell'>
-                <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
-              </div>
-
-              <!-- Custom renderer when user selected one or more rows -->
-              <div slot="selection" slot-scope="selection">
-                <q-btn color="primary" @click="$router.push('/sensus/' + selection.rows[0].data.local_id)">
-                  <i>edit</i>
-                </q-btn>
-                <q-btn color="primary" @click="deleteSensus(selection.rows[0].data.local_id)">
-                  <i>delete</i>
-                </q-btn>
-              </div>
-            </q-data-table>
-          </div>
-        </q-collapsible>
       </q-list>
     </q-card>
+
+    <div v-if="$route.params.id === '2'" style="width: 90vw">
+      <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/lilit/')">Tambah</q-btn>
+      <q-data-table :data="getNewLilit" :config="config" :columns="columns">
+        <!-- Custom renderer for "message" column -->
+        <div slot="col-message" slot-scope="cell">
+          <span class="light-paragraph">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "source" column -->
+        <div slot="col-source" slot-scope="cell">
+          <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+            Audit
+            <q-tooltip>Some data</q-tooltip>
+          </span>
+          <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "action" column with button for custom action -->
+        <div slot='col-action' slot-scope='cell'>
+          <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+        </div>
+
+        <!-- Custom renderer when user selected one or more rows -->
+        <div slot="selection" slot-scope="selection">
+          <q-btn color="primary" @click="$router.push('/lilit/' + selection.rows[0].data.local_id)">
+            <i>edit</i>
+          </q-btn>
+          <q-btn color="primary" @click="deleteLilit(selection.rows[0].data.local_id)">
+            <i>delete</i>
+          </q-btn>
+        </div>
+      </q-data-table>
+    </div>
+
+    <div v-if="$route.params.id === '3'" style="width: 90vw">
+      <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/ihtp/')">Tambah</q-btn>
+      <q-data-table
+        :data="getNewIHtp"
+        :config="config2"
+        :columns="columnsIHtps"
+        class="set-table-wrap"
+      >
+        <!-- Custom renderer for "message" column -->
+        <div slot="col-message" slot-scope="cell">
+          <span class="light-paragraph">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "source" column -->
+        <div slot="col-source" slot-scope="cell">
+          <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+            Audit
+            <q-tooltip>Some data</q-tooltip>
+          </span>
+          <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "action" column with button for custom action -->
+        <div slot='col-action' slot-scope='cell'>
+          <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+        </div>
+
+        <!-- Custom renderer when user selected one or more rows -->
+        <div slot="selection" slot-scope="selection">
+          <q-btn color="primary" @click="$router.push('/ihtp/' + selection.rows[0].data.local_id)">
+            <i>edit</i>
+          </q-btn>
+          <q-btn color="primary" @click="deleteIHtp(selection.rows[0].data.local_id)">
+            <i>delete</i>
+          </q-btn>
+        </div>
+      </q-data-table>
+    </div>
+
+    <div v-if="$route.params.id === '4'" style="width: 90vw">
+      <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/phtp/')">Tambah</q-btn>
+      <q-data-table
+        :data="getNewPHtp"
+        :config="config2"
+        :columns="columnsPHtps"
+        class="set-table-wrap"
+      >
+        <!-- Custom renderer for "message" column -->
+        <div slot="col-message" slot-scope="cell">
+          <span class="light-paragraph">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "source" column -->
+        <div slot="col-source" slot-scope="cell">
+          <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+            Audit
+            <q-tooltip>Some data</q-tooltip>
+          </span>
+          <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "action" column with button for custom action -->
+        <div slot='col-action' slot-scope='cell'>
+          <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+        </div>
+
+        <!-- Custom renderer when user selected one or more rows -->
+        <div slot="selection" slot-scope="selection">
+          <q-btn color="primary" @click="$router.push('/phtp/' + selection.rows[0].data.local_id)">
+            <i>edit</i>
+          </q-btn>
+          <q-btn color="primary" @click="deletePHtp(selection.rows[0].data.local_id)">
+            <i>delete</i>
+          </q-btn>
+        </div>
+      </q-data-table>
+    </div>
+
+    <div v-if="$route.params.id === '5'" style="width: 90vw">
+      <q-btn color="primary" class="full-width" icon="playlist add" @click="$router.push('/sensus/')">Tambah</q-btn>
+      <q-data-table
+        :data="getNewSensus"
+        :config="config3"
+        :columns="columnsSensus"
+        class="set-table-wrap"
+      >
+        <!-- Custom renderer for "message" column -->
+        <div slot="col-message" slot-scope="cell">
+          <span class="light-paragraph">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "source" column -->
+        <div slot="col-source" slot-scope="cell">
+          <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
+            Audit
+            <q-tooltip>Some data</q-tooltip>
+          </span>
+          <span v-else class="label text-white bg-negative">{{cell.data}}</span>
+        </div>
+
+        <!-- Custom renderer for "action" column with button for custom action -->
+        <div slot='col-action' slot-scope='cell'>
+          <q-btn color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
+        </div>
+
+        <!-- Custom renderer when user selected one or more rows -->
+        <div slot="selection" slot-scope="selection">
+          <q-btn color="primary" @click="$router.push('/sensus/' + selection.rows[0].data.local_id)">
+            <i>edit</i>
+          </q-btn>
+          <q-btn color="primary" @click="deleteSensus(selection.rows[0].data.local_id)">
+            <i>delete</i>
+          </q-btn>
+        </div>
+      </q-data-table>
+    </div>
   </q-layout>
 </template>
 

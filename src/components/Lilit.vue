@@ -1,14 +1,14 @@
 <template>
   <q-layout ref="layout" view="hHr LpR lFf" class="layout-padding docs-input row justify-center">
     <q-toolbar slot="header">
-      <q-btn flat v-go-back=" '/audit' ">
+      <q-btn flat  @click="goBack()">
         <q-icon name="keyboard arrow left" />
       </q-btn>
       <q-toolbar-title>
         Ukuran Lilit Batang
       </q-toolbar-title>
       <q-btn flat @click="save()">
-        <q-icon name="save" />
+        Simpan
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">

@@ -13,14 +13,13 @@
       </q-btn>
 
       <q-toolbar-title>
-        Quasar App
-        <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
+        SIMAP
       </q-toolbar-title>
 
       <q-btn
         flat
         @click="scan()"
-        v-if="$router.history.current.path === '/tree'"
+        v-if="$router.history.current.path === '/tree/' + $router.history.current.params.id"
       >
         Scan QR Code
       </q-btn>
@@ -39,25 +38,29 @@
           <q-item-side icon="home" />
           <q-item-main label="Home"  />
         </q-side-link>
-        <q-side-link item to="/tree">
-          <q-item-side icon="done all" />
+        <q-side-link item to="/tree/1">
+          <q-item-side icon="photo library" />
           <q-item-main label="Data Pohon" sublabel="" />
         </q-side-link>
-        <q-side-link item to="/tree">
-          <q-item-side icon="done all" />
+        <q-side-link item to="/tree/2">
+          <q-item-side icon="track changes" />
           <q-item-main label="Ukur Lilit Batang" sublabel="" />
         </q-side-link>
-        <q-side-link item to="/tree">
-          <q-item-side icon="done all" />
+        <q-side-link item to="/tree/3">
+          <q-item-side icon="zoom in" />
           <q-item-main label="Identifikasi HPT" sublabel="" />
         </q-side-link>
-        <q-side-link item to="/tree">
-          <q-item-side icon="done all" />
+        <q-side-link item to="/tree/4">
+          <q-item-side icon="build" />
+          <q-item-main label="Pengendalian HPT" sublabel="" />
+        </q-side-link>
+        <q-side-link item to="/tree/5">
+          <q-item-side icon="description" />
           <q-item-main label="Sensus Kondisi Pohon" sublabel="" />
         </q-side-link>
         <q-side-link to="/schedule" item>
           <q-item-side icon="schedule" />
-          <q-item-main label="JadJadwal Kegiatanwal" sublabel="" />
+          <q-item-main label="Jadwal Kegiatanwal" sublabel="" />
         </q-side-link>   
       </q-list>
     </div>
@@ -125,7 +128,7 @@ export default {
           result => {
             let barcode = result.text
             this.$store.dispatch('loadTree', barcode).then(() => {
-              this.$router.push('/audit')
+              this.$router.push('/audit/' + this.$router.history.current.params.id)
             }).catch(() => {
               Toast.create['negative']({
                 html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
@@ -140,7 +143,7 @@ export default {
       else {
         let barcode = 'AAS.GAAS02F010001'
         this.$store.dispatch('loadTree', barcode).then(() => {
-          this.$router.push('/audit')
+          this.$router.push('/audit/' + this.$router.history.current.params.id)
         }).catch(() => {
           Toast.create['negative']({
             html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
