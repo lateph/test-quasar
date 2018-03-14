@@ -32,13 +32,13 @@ const getters = {
     return state.sensuss.find(sensus => sensus.local_id === parseInt(id))
   },
   getNewIHtp: state => {
-    return state.iHtps.filter(iHtp => iHtp.flag === 1 || iHtp.flag === 2 || iHtp.flag === 3)
+    return state.iHtps.filter(iHtp => iHtp.flag === 1 || iHtp.flag === 2 || iHtp.flag === 3).sort((a, b) => (new Date(a.checked_at)) < (new Date(b.checked_at)))
   },
   getNewIHtpById: (state) => (id) => {
     return state.iHtps.find(iHtp => iHtp.local_id === parseInt(id))
   },
   getNewPHtp: state => {
-    return state.pHtps.filter(pHtp => pHtp.flag === 1 || pHtp.flag === 2 || pHtp.flag === 3)
+    return state.pHtps.filter(pHtp => pHtp.flag === 1 || pHtp.flag === 2 || pHtp.flag === 3).sort((a, b) => (new Date(a.checked_at)) < (new Date(b.checked_at)))
   },
   getNewPHtpById: (state) => (id) => {
     return state.pHtps.find(pHtp => pHtp.local_id === parseInt(id))
@@ -235,6 +235,7 @@ const actions = {
         let user = LocalStorage.get.item('user')
         let inserted = await v.$db.ihtps.add({
           keterangan: iHtp.keterangan,
+          pestId: iHtp.pestId,
           pohon_id: state.tree.id,
           checked_at: new Date().getTime(),
           created_at: new Date().getTime(),
@@ -314,11 +315,13 @@ const actions = {
         newRows.forEach(row => {
           data[`record[insert][${row.local_id}][treeId]`] = row.pohon_id
           data[`record[insert][${row.local_id}][description]`] = row.keterangan
+          data[`record[insert][${row.local_id}][pestId]`] = row.pestId
           data[`record[insert][${row.local_id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const updateRows = await v.$db.ihtps.where({flag: 3}).toArray()
         updateRows.forEach(row => {
           data[`record[update][${row.id}][description]`] = row.keterangan
+          data[`record[update][${row.id}][pestId]`] = row.pestId
           data[`record[update][${row.id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const deleteRows = await v.$db.ihtps.where({flag: 4}).toArray()
@@ -339,6 +342,10 @@ const actions = {
         let user = LocalStorage.get.item('user')
         await v.$db.phtps.add({
           keterangan: pHtp.keterangan,
+          materialType: pHtp.materialType,
+          materialQuantity: pHtp.materialQuantity,
+          materialUnit: pHtp.materialUnit,
+          pestId: pHtp.pestId,
           pohon_id: state.tree.id,
           checked_at: new Date().getTime(),
           created_at: new Date().getTime(),
@@ -418,11 +425,19 @@ const actions = {
         newRows.forEach(row => {
           data[`record[insert][${row.local_id}][treeId]`] = row.pohon_id
           data[`record[insert][${row.local_id}][description]`] = row.keterangan
+          data[`record[insert][${row.local_id}][materialType]`] = row.materialType
+          data[`record[insert][${row.local_id}][materialQuantity]`] = row.materialQuantity
+          data[`record[insert][${row.local_id}][materialUnit]`] = row.materialUnit
+          data[`record[insert][${row.local_id}][pestId]`] = row.pestId
           data[`record[insert][${row.local_id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const updateRows = await v.$db.phtps.where({flag: 3}).toArray()
         updateRows.forEach(row => {
           data[`record[update][${row.id}][description]`] = row.keterangan
+          data[`record[update][${row.id}][materialType]`] = row.materialType
+          data[`record[update][${row.id}][materialQuantity]`] = row.materialQuantity
+          data[`record[update][${row.id}][materialUnit]`] = row.materialUnit
+          data[`record[update][${row.id}][pestId]`] = row.pestId
           data[`record[update][${row.id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const deleteRows = await v.$db.phtps.where({flag: 4}).toArray()

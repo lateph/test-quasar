@@ -60,7 +60,7 @@
         </q-side-link>
         <q-side-link to="/schedule" item>
           <q-item-side icon="schedule" />
-          <q-item-main label="Jadwal Kegiatanwal" sublabel="" />
+          <q-item-main label="Jadwal Kegiatan" sublabel="" />
         </q-side-link>   
       </q-list>
     </div>

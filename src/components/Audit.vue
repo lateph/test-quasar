@@ -365,6 +365,23 @@ export default {
           format (value) {
             return moment(value).format('YYYY-MM-DD HH:mm:ss')
           }
+        },
+        {
+          label: 'HPT',
+          field: 'pestId',
+          filter: true,
+          sort: true,
+          type: 'string',
+          width: '250px',
+          format: (value, row) => {
+            let pest = this.pests.find((row) => row.id === value)
+            if (pest) {
+              return pest.name
+            }
+            else {
+              return ''
+            }
+          }
         }
       ],
       columnsPHtps: [
@@ -389,6 +406,34 @@ export default {
           format (value) {
             return moment(value).format('YYYY-MM-DD HH:mm:ss')
           }
+        },
+        {
+          label: 'Material',
+          field: 'materialQuantity',
+          filter: true,
+          sort: true,
+          type: 'string',
+          width: '250px',
+          format (value, row) {
+            return `${row.materialQuantity} ${row.materialUnit} ${row.materialType}`
+          }
+        },
+        {
+          label: 'HPT',
+          field: 'pestId',
+          filter: true,
+          sort: true,
+          type: 'string',
+          width: '250px',
+          format: (value, row) => {
+            let pest = this.pests.find((row) => row.id === value)
+            if (pest) {
+              return pest.name
+            }
+            else {
+              return ''
+            }
+          }
         }
       ],
       canGoBack: window.history.length > 1
@@ -401,7 +446,7 @@ export default {
       'getNewSensus',
       'getNewPHtp'
     ]),
-    ...mapState(['tree', 'treeimages'])
+    ...mapState(['tree', 'treeimages', 'pests'])
   },
   methods: {
     goBack () {

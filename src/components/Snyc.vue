@@ -3,7 +3,6 @@
     <q-btn color="primary" class="full-width" icon="autorenew" @click="sync()">Sinkronisasi data Umum</q-btn>
     <q-btn color="primary" class="full-width" icon="file download" @click="openModalS2()">Sinkronisasi data spesifik</q-btn>    
     <q-btn color="primary" class="full-width" icon="file upload" @click="upload()">Upload Data</q-btn>
-    <q-btn color="primary" class="full-width" icon="file upload" @click="logout()">Set Test</q-btn>
 
     <q-modal ref="selectBlokModal" minimized :content-css="{padding: '20px'}" no-esc-dismiss>
       <q-select
@@ -11,6 +10,7 @@
         color="secondary"
         float-label="Company"
         v-model="pt"
+        :disable="ptDisabled"
         :options="listPt"
       />
 
@@ -19,6 +19,7 @@
         color="secondary"
         float-label="Estate"
         v-model="kebun"
+        :disable="kebunDisabled"
         :options="listKebun"
       />
 
@@ -27,6 +28,7 @@
         color="secondary"
         float-label="Division"
         v-model="afdeling"
+        :disable="afdelingDisabled"        
         :options="listAfdeling"
       />
 
@@ -35,6 +37,7 @@
         color="secondary"
         float-label="Block"
         v-model="blok"
+        :disable="blokDisabled" 
         :options="listBlok"
       />
       <div class="modal-button-blok row">
@@ -63,6 +66,10 @@ export default {
       kebun: '',
       blok: '',
       afdeling: '',
+      ptDisabled: '',
+      kebunDisabled: '',
+      blokDisabled: '',
+      afdelingDisabled: '',
       username: 'nizar.mahroussy@gmail.com',
       password: 'indonesia',
       listPt: [],
@@ -130,7 +137,8 @@ export default {
         })
       }
       else {
-        this.$refs.selectBlokModal.open()
+        console.log('asd')
+        this.login(3)
       }
     },
     async sync () {
@@ -289,6 +297,7 @@ export default {
           return {
             id: x.id,
             pohon_id: x.treeId,
+            pestId: x.pestId,
             keterangan: x.description,
             checked_at: x.checkedAt,
             flag: 1
@@ -302,6 +311,10 @@ export default {
             id: x.id,
             pohon_id: x.treeId,
             keterangan: x.description,
+            materialType: x.materialType,
+            materialQuantity: x.materialQuantity,
+            materialUnit: x.materialUnit,
+            pestId: x.pestId,
             checked_at: x.checkedAt,
             flag: 1
           }
@@ -440,6 +453,7 @@ export default {
           return {
             id: x.id,
             pohon_id: x.treeId,
+            pestId: x.pestId,
             keterangan: x.description,
             checked_at: x.checkedAt,
             flag: 1
@@ -543,6 +557,10 @@ export default {
             id: x.id,
             pohon_id: x.treeId,
             keterangan: x.description,
+            materialType: x.materialType,
+            materialQuantity: x.materialQuantity,
+            materialUnit: x.materialUnit,
+            pestId: x.pestId,
             checked_at: x.checkedAt,
             flag: 1
           }
@@ -672,6 +690,28 @@ export default {
                   Loading.hide()
                   if (type === 2) {
                     this.upload()
+                  }
+                  else if (type === 3) {
+                    Loading.show()
+                    this.pt = response.data.data.companyCode ? response.data.data.companyCode : ''
+                    this.ptDisabled = this.pt !== ''
+                    const timeout = setTimeout(() => {
+                      clearInterval(timeout)
+                      this.kebun = response.data.data.estateCode ? response.data.data.estateCode : ''
+                      this.kebunDisabled = this.kebun !== ''
+                    }, 1000)
+                    const timeout2 = setTimeout(() => {
+                      clearInterval(timeout2)
+                      this.afdeling = response.data.data.divisionCode ? response.data.data.divisionCode : ''
+                      this.afdelingDisabled = this.afdeling !== ''
+                    }, 2000)
+                    const timeout3 = setTimeout(() => {
+                      Loading.hide()
+                      clearInterval(timeout3)
+                      this.blok = response.data.data.blockCode ? response.data.data.blockCode : ''
+                      this.blokDisabled = this.blok !== ''
+                      this.$refs.selectBlokModal.open()
+                    }, 3000)
                   }
                   else {
                     this.sync2()
