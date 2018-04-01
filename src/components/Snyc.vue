@@ -1,8 +1,51 @@
 <template>
   <div class="layout-padding docs-btn row justify-center my-home">
-    <q-btn color="primary" class="full-width" icon="autorenew" @click="sync()">Sinkronisasi data Umum</q-btn>
-    <q-btn color="primary" class="full-width" icon="file download" @click="openModalS2()">Sinkronisasi data spesifik</q-btn>    
-    <q-btn color="primary" class="full-width" icon="file upload" @click="upload()">Upload Data</q-btn>
+    <div class="col-12">
+      <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align:center;">
+          <q-btn color="primary"  icon="autorenew" @click="sync()" round big></q-btn>
+          </div>
+        <div class="col-4"></div>
+      </div>
+      <div class="row">
+        <div class="col-12" style="text-align:center;">
+          <h6>Sinkronisasi data Umum</h6>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align:center;"><q-btn color="primary"  icon="file download" @click="openModalS2()" round big></q-btn>  </div>
+        <div class="col-4"></div>
+      </div>
+      <div class="row">
+        <div class="col-12" style="text-align:center;">
+          <h6>Sinkronisasi data spesifik</h6>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align:center;"><q-btn color="primary"  icon="file upload" @click="upload()" round big></q-btn></div>
+        <div class="col-4"></div>
+      </div>
+      <div class="row">
+        <div class="col-12" style="text-align:center;">
+          <h6>Upload Data</h6>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12" style="text-align:center;">
+          <img src="~assets/simap.png" width="265px" alt="">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sinkronisasi data Umum -->
+    <!-- Sinkronisasi data spesifik -->
+    <!-- Upload Data -->
+    
+      
+    
 
     <q-modal ref="selectBlokModal" minimized :content-css="{padding: '20px'}" no-esc-dismiss>
       <q-select
