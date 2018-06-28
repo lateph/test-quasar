@@ -30,7 +30,7 @@ import 'quasar-extras/material-icons'
 // import 'quasar-extras/fontawesome'
 // import 'quasar-extras/animate'
 
-axios.defaults.baseURL = 'http://api.simap.server-development.net'
+axios.defaults.baseURL = 'http://apisimap.kppgroup.co.id'
 axios.defaults.headers.common['X-SIMAP-appKey'] = 'poiuyTREWQ1234509876'
 axios.defaults.headers.common['X-SIMAP-appSecret'] = 'QWERTyuiop0987612345'
 console.log(axios.defaults.headers)
