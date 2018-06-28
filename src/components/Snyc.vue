@@ -35,7 +35,7 @@
       </div>
       <div class="row">
         <div class="col-12" style="text-align:center;">
-          <img src="~assets/simap.png" width="265px" alt="">
+          <img src="~assets/icon.png" width="265px" alt="">
         </div>
       </div>
     </div>
