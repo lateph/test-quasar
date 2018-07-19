@@ -1,35 +1,31 @@
 <template>
   <div class="layout-padding docs-btn row justify-center my-home">
     <div class="col-12">
-      <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4" style="text-align:center;">
+      <div class="row"  style="margin-bottom: 10px">
+        <div class="col-6" style="text-align:center;">
           <q-btn color="primary"  icon="autorenew" @click="sync()" round big></q-btn>
-          </div>
-        <div class="col-4"></div>
+        </div>
+        <div class="col-6" style="text-align:center;"><q-btn color="primary"  icon="file download" @click="openModalS2()" round big></q-btn>  </div>
       </div>
-      <div class="row">
-        <div class="col-12" style="text-align:center;">
+      <div class="row" style="margin-bottom: 40px">
+        <div class="col-6" style="text-align:center;">
           <h6>Sinkronisasi data Umum</h6>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4" style="text-align:center;"><q-btn color="primary"  icon="file download" @click="openModalS2()" round big></q-btn>  </div>
-        <div class="col-4"></div>
-      </div>
-      <div class="row">
-        <div class="col-12" style="text-align:center;">
+         <div class="col-6" style="text-align:center;">
           <h6>Sinkronisasi data spesifik</h6>
         </div>
       </div>
-      <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4" style="text-align:center;"><q-btn color="primary"  icon="file upload" @click="upload()" round big></q-btn></div>
-        <div class="col-4"></div>
+      <div class="row"  style="margin-bottom: 10px">
+        <div class="col-6" style="text-align:center;">
+          <q-btn color="primary"  icon="center_focus_weak" @click="scanQR()" round big></q-btn>
+        </div>
+        <div class="col-6" style="text-align:center;"><q-btn color="primary"  icon="file upload" @click="upload()" round big></q-btn></div>
       </div>
-      <div class="row">
-        <div class="col-12" style="text-align:center;">
+      <div class="row"  style="margin-bottom: 40px">
+        <div class="col-6" style="text-align:center;">
+          <h6>Scan QR Code</h6>
+        </div>
+        <div class="col-6" style="text-align:center;">
           <h6>Upload Data</h6>
         </div>
       </div>
@@ -113,8 +109,8 @@ export default {
       kebunDisabled: '',
       blokDisabled: '',
       afdelingDisabled: '',
-      username: 'nizar.mahroussy@gmail.com',
-      password: 'indonesia',
+      username: '',
+      password: '',
       listPt: [],
       listKebun: [],
       listAfdeling: [],
@@ -136,6 +132,35 @@ export default {
     this.loadPt()
   },
   methods: {
+    scanQR () {
+      if (window.cordova !== undefined) {
+        cordova.plugins.barcodeScanner.scan(
+          result => {
+            let barcode = result.text
+            this.$store.dispatch('loadTree', barcode).then(() => {
+              this.$router.push('/audit/' + '1')
+            }).catch(() => {
+              Toast.create['negative']({
+                html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+              })
+            })
+          },
+          function (error) {
+            alert('Scanning failed: ' + error)
+          }
+        )
+      }
+      else {
+        let barcode = 'KMS.SJUE01C001.0001'
+        this.$store.dispatch('loadTree', barcode).then(() => {
+          this.$router.push('/audit/' + '1')
+        }).catch(() => {
+          Toast.create['negative']({
+            html: `Data Pohon untuk barcode : ${barcode} tidak ditemukan`
+          })
+        })
+      }
+    },
     goBack () {
       window.history.go(-1)
     },
@@ -418,6 +443,7 @@ export default {
       }
     },
     async upload () {
+      console.log('test')
       try {
         Loading.show({message: 'Uploading data lilit pohon'})
         const dataLilit = await this.$store.dispatch('getUploadDataLilit')
@@ -762,6 +788,9 @@ export default {
                 })
                 .catch(error => {
                   Loading.hide()
+                  Toast.create['negative']({
+                    html: 'Karyawan ID tidak ditemukan'
+                  })
                   console.log(error)
                 })
             }

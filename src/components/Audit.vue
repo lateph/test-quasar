@@ -65,6 +65,46 @@
       </q-list>
       <q-card-separator  v-if="$route.params.id === '1'"/>
       <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
+        <q-collapsible icon="track changes" label="Riwayat HPT" opened>
+          <q-data-table :data="getNewIHtp" :config="configa" :columns="columnsb">
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+          </q-data-table>
+        </q-collapsible>
+      </q-list>
+      <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
+        <q-collapsible icon="track changes" label="Riwayat Kendali HPT" opened>
+          <q-data-table :data="getNewPHtp" :config="configa" :columns="columnsc">
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+          </q-data-table>
+        </q-collapsible>
+      </q-list>
+      <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
+        <q-collapsible icon="track changes" label="Riwayat Sensus" opened>
+          <q-data-table :data="getNewSensus" :config="configa" :columns="columnsd">
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+          </q-data-table>
+        </q-collapsible>
+      </q-list>
+      <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
+        <q-collapsible icon="track changes" label="Riwayat Lilit Pohon" opened>
+          <q-data-table :data="getNewLilit" :config="configa" :columns="columnsa">
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+          </q-data-table>
+        </q-collapsible>
+      </q-list>
+      <q-list separator class="audit-collapsible no-margin"  v-if="$route.params.id === '1'">
         <q-collapsible icon="track changes" label="Gambar" :sublabel="treeimages.length + ' New Data'">
           <q-btn color="primary" class="full-width" icon="playlist add" @click="tambahGambar()">Tambah</q-btn>          
           <div class="parent-galery-audit">    
@@ -313,6 +353,13 @@ export default {
         }
         // selection: 'single'
       },
+      configa: {
+        rowHeight: '40px',
+        responsive: false,
+        // selection: 'single',
+        pagination: false
+        // selection: 'single'
+      },
       config3: {
         rowHeight: '40px',
         responsive: false,
@@ -359,6 +406,110 @@ export default {
           },
           format (value) {
             return moment(value).format('YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      ],
+      columnsa: [
+        {
+          label: 'Tanggal',
+          field: 'checked_at',
+          filter: false,
+          width: '120px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD')
+          }
+        },
+        {
+          label: 'Ukuran',
+          field: 'lilit_batang',
+          filter: false,
+          sort: true,
+          width: '100px',
+          style: {'text-align': 'right'},
+          type: 'number'
+        }
+      ],
+      columnsb: [
+        {
+          label: 'Tanggal',
+          field: 'checked_at',
+          filter: false,
+          width: '120px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD')
+          }
+        },
+        {
+          label: 'Hama',
+          field: 'pestId',
+          filter: false,
+          sort: true,
+          width: '200px',
+          format: (value) => {
+            let pest = this.pests.find((row) => row.id === value)
+            if (pest) {
+              return pest.name
+            }
+            else {
+              return ''
+            }
+          }
+        }
+      ],
+      columnsc: [
+        {
+          label: 'Tanggal',
+          field: 'checked_at',
+          filter: false,
+          width: '120px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD')
+          }
+        },
+        {
+          label: 'Material Jenis',
+          field: 'materialType',
+          filter: false,
+          sort: true,
+          width: '200px'
+        }
+      ],
+      columnsd: [
+        {
+          label: 'Tanggal',
+          field: 'checked_at',
+          filter: false,
+          width: '120px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD')
+          }
+        },
+        {
+          label: 'Kondisi',
+          field: 'kondisi_id',
+          filter: false,
+          sort: true,
+          width: '200px',
+          format: (value) => {
+            let pest = this.conditions.find((row) => row.id === value)
+            if (pest) {
+              return pest.name
+            }
+            else {
+              return ''
+            }
           }
         }
       ],
@@ -514,7 +665,7 @@ export default {
       'getNewSensus',
       'getNewPHtp'
     ]),
-    ...mapState(['tree', 'treeimages', 'pests'])
+    ...mapState(['tree', 'treeimages', 'pests', 'conditions'])
   },
   methods: {
     goBack () {

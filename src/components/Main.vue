@@ -146,7 +146,7 @@ export default {
         )
       }
       else {
-        let barcode = 'AAS.GAAS02F010001'
+        let barcode = 'KMS.SJUE01C001.0001'
         this.$store.dispatch('loadTree', barcode).then(() => {
           this.$router.push('/audit/' + this.$router.history.current.params.id)
         }).catch(() => {
