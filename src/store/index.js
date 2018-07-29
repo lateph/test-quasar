@@ -15,7 +15,8 @@ const state = {
   iHtps: [],
   pHtps: [],
   conditions: [],
-  pests: []
+  pests: [],
+  riwayats: []
 }
 
 const getters = {
@@ -79,6 +80,9 @@ const mutations = {
   setLilit (state, lilits) {
     state.lilits = lilits
   },
+  setRiwayatPanen (state, riwayats) {
+    state.riwayats = riwayats
+  },
   setSensus (state, sensuss) {
     state.sensuss = sensuss
   },
@@ -119,6 +123,8 @@ const actions = {
         await dispatch('loadIHtp')
         await dispatch('loadPHtp')
         await dispatch('loadSensus')
+        await dispatch('loadRiwayatPanen')
+
         resolve(tree)
       }
       catch (error) {
@@ -197,6 +203,18 @@ const actions = {
         const lilits = await v.$db.lilits.where({pohon_id: state.tree.id}).toArray()
         commit('setLilit', lilits)
         resolve(lilits)
+      }
+      catch (error) {
+        reject(error)
+      }
+    })
+  },
+  loadRiwayatPanen ({ commit, state }, code) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const riwayats = await v.$db.riwayats.where({pohon_id: state.tree.id}).toArray()
+        commit('setRiwayatPanen', riwayats)
+        resolve(riwayats)
       }
       catch (error) {
         reject(error)

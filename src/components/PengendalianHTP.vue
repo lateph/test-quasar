@@ -5,7 +5,7 @@
         <q-icon name="keyboard arrow left" />
       </q-btn>
       <q-toolbar-title>
-        Pengendalian HTP
+        Pengendalian HPT
       </q-toolbar-title>
       <q-btn flat @click="save()">
         Simpan
@@ -22,7 +22,7 @@
         <q-input float-label="Material Quantity" v-model="form.materialQuantity" type="number" :error="$v.form.materialQuantity.$error"  />
       </q-field>
       <q-field>
-        <q-input float-label="Material Unit" v-model="form.materialUnit" type="text" :error="$v.form.materialUnit.$error"  />
+        <q-input float-label="Material Unit of Measure (UoM)" v-model="form.materialUnit" type="text" :error="$v.form.materialUnit.$error"  />
       </q-field>
       <q-field>
         <q-select

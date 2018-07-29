@@ -12,7 +12,7 @@
       </q-btn>
     </q-toolbar>
     <div style="width: 90vw;">
-      <p class="caption">Radio group</p>
+      <p class="caption">Status</p>
       <q-option-group
         color="secondary"
         type="radio"

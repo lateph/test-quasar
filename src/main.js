@@ -46,7 +46,7 @@ Vue.use(Vuelidate)
 Vue.use(VueImg)
 
 export default new VueIdb({
-  version: 3,
+  version: 4,
   database: 'pohon',
   schemas: [
     { conditions: 'id, name, updatedAt' },
@@ -64,7 +64,8 @@ export default new VueIdb({
     { sensuss: '++local_id, id, pohon_id, kondisi_id, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
     { ihtps: '++local_id, id, pohon_id, pestId, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
     { phtps: '++local_id, id, pohon_id, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag, materialType, materialQuantity, materialUnit, pestId' },
-    { trees: 'id, blockCode, blockName, code, companyCode, companyName, divisionCode, divisionName, estateCode, estateName, latitude, longitude, number, plantedAt' }
+    { trees: 'id, blockCode, blockName, code, companyCode, companyName, divisionCode, divisionName, estateCode, estateName, latitude, longitude, number, plantedAt' },
+    { riwayats: '++local_id, blok_kode, created_at, panen_id, pohon_id, produksi_qty' }
   ]
 })
 

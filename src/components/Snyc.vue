@@ -109,8 +109,10 @@ export default {
       kebunDisabled: '',
       blokDisabled: '',
       afdelingDisabled: '',
-      username: '',
-      password: '',
+      username: 'nadzif.lambda@gmail.com',
+      // username: '',
+      password: 'indonesia2018',
+      // password: '',
       listPt: [],
       listKebun: [],
       listAfdeling: [],
@@ -280,6 +282,11 @@ export default {
           throw new Error('Pilih Blok')
         }
 
+        let responseRiwayat = await this.$http.post('fetch/tree-harvest/block/' + this.blok)
+        Loading.show({message: 'Sinkornisasi data riwayat ... '})
+        this.$db.riwayats.clear()
+        await this.$db.riwayats.bulkAdd(responseRiwayat.data.data.treeCensuses)
+
         let responseSchedule = await this.$http.post('fetch/schedule/block/' + this.blok)
         Loading.show({message: 'Sinkornisasi data schedule ... '})
         this.$db.schedules.clear()
@@ -358,7 +365,7 @@ export default {
             flag: 1
           }
         }))
-        Loading.show({message: 'Sinkornisasi data identifikasi htp ... '})
+        Loading.show({message: 'Sinkornisasi data Rekam hpt ... '})
         const ihtps = await this.$http.post('fetch/tree-pest-identification/block/' + this.blok)
         this.$db.ihtps.clear()
         await this.$db.ihtps.bulkAdd(ihtps.data.data.treePestIdentifications.map(x => {
@@ -371,7 +378,7 @@ export default {
             flag: 1
           }
         }))
-        Loading.show({message: 'Sinkornisasi data pengendalian htp ... '})
+        Loading.show({message: 'Sinkornisasi data pengendalian hpt ... '})
         const phtps = await this.$http.post('fetch/tree-pest-control/block/' + this.blok)
         this.$db.phtps.clear()
         await this.$db.phtps.bulkAdd(phtps.data.data.treePestControls.map(x => {
@@ -430,8 +437,12 @@ export default {
         Loading.hide()
       }
       catch (error) {
+        console.log(error)
         Loading.hide()
         if (error.response && error.response.status === 403) {
+          Toast.create['negative']({
+            html: error.message
+          })
           this.login()
         }
         else {
@@ -486,7 +497,7 @@ export default {
           }
         }))
 
-        Loading.show({message: `Sinkornisasi gambar htp`})
+        Loading.show({message: `Sinkornisasi gambar hpt`})
         let ihtpsupdate = await this.$db.ihtps.where({flag: 3}).toArray()
         for (let ihtpsxxx of ihtpsupdate) {
           let arToDelete = await this.$db.newihtpimages.where({'treePestIdentificationId': parseInt(ihtpsxxx.local_id)}).toArray()
@@ -508,7 +519,7 @@ export default {
           }
         }
 
-        Loading.show({message: 'Uploading data identifikasi htp'})
+        Loading.show({message: 'Uploading data Rekam hpt'})
         const dataihtps = await this.$store.dispatch('getUploadDataIHtp')
         let dataIdentificatoin = await this.$http.post('maintain/tree-pest-identification', querystring.stringify(dataihtps), {
           headers: {
@@ -531,7 +542,7 @@ export default {
 
         let totalImage = await this.$db.newihtpimages.count()
         console.log('total new image ', totalImage)
-        Loading.show({message: 'Sinkornisasi gambar htp  ... '})
+        Loading.show({message: 'Sinkornisasi gambar hpt  ... '})
         let insertNewImagePest = dataIdentificatoin.data.data.insert
         let countImageHtp = 0
         if (insertNewImagePest) {
@@ -611,7 +622,7 @@ export default {
           }
         }
 
-        Loading.show({message: 'Uploading data pengendalian htp'})
+        Loading.show({message: 'Uploading data pengendalian hpt'})
         const dataphtps = await this.$store.dispatch('getUploadDataPHtp')
         await this.$http.post('maintain/tree-pest-control', querystring.stringify(dataphtps), {
           headers: {
@@ -636,7 +647,7 @@ export default {
         }))
 
         let totalImagetree = await this.$db.treeimages.where({flag: 2}).count()
-        Loading.show({message: 'Sinkornisasi gambar htp  ... '})
+        Loading.show({message: 'Sinkornisasi gambar hpt  ... '})
         let countImagetree = 0
         let imagestreeupload = await this.$db.treeimages.where({flag: 2}).toArray()
         for (let row of imagestreeupload) {

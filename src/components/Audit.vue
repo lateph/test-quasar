@@ -1,7 +1,7 @@
 <template>
   <q-layout ref="layout" view="hHr LpR lFf" class="layout-padding docs-input row justify-center" style="width: 100%">
-    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/ihtp')">Identifikasi HTP</q-btn> -->
-    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/phtp')">Pengendalian HTP</q-btn> -->
+    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/ihtp')">Rekam HPT</q-btn> -->
+    <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/phtp')">Pengendalian HPT</q-btn> -->
     <!-- <q-btn color="primary" class="full-width" icon="" @click="$router.push('/sensus')">Sensus</q-btn> -->
     <q-toolbar slot="header">
       <q-btn flat @click="goBack()">
@@ -14,7 +14,7 @@
         Lilit Pohon
       </q-toolbar-title>
       <q-toolbar-title v-if="$route.params.id === '3'">
-        Identifikasi HPT
+        Rekam HPT
       </q-toolbar-title>
       <q-toolbar-title v-if="$route.params.id === '4'">
         Pengendalian HPT
@@ -65,7 +65,7 @@
       </q-list>
       <q-card-separator  v-if="$route.params.id === '1'"/>
       <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
-        <q-collapsible icon="track changes" label="Riwayat HPT" opened>
+        <q-collapsible icon="track changes" label="Riwayat Rekam HPT" opened>
           <q-data-table :data="getNewIHtp" :config="configa" :columns="columnsb">
             <!-- Custom renderer for "message" column -->
             <div slot="col-message" slot-scope="cell">
@@ -97,6 +97,16 @@
       <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
         <q-collapsible icon="track changes" label="Riwayat Lilit Pohon" opened>
           <q-data-table :data="getNewLilit" :config="configa" :columns="columnsa">
+            <!-- Custom renderer for "message" column -->
+            <div slot="col-message" slot-scope="cell">
+              <span class="light-paragraph">{{cell.data}}</span>
+            </div>
+          </q-data-table>
+        </q-collapsible>
+      </q-list>
+      <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
+        <q-collapsible icon="track changes" label="Riwayat Panen" opened>
+          <q-data-table :data="riwayats" :config="configa" :columns="columnse">
             <!-- Custom renderer for "message" column -->
             <div slot="col-message" slot-scope="cell">
               <span class="light-paragraph">{{cell.data}}</span>
@@ -432,6 +442,29 @@ export default {
           type: 'number'
         }
       ],
+      columnse: [
+        {
+          label: 'Tanggal',
+          field: 'checked_at',
+          filter: false,
+          width: '120px',
+          sort (a, b) {
+            return (new Date(a)) - (new Date(b))
+          },
+          format (value) {
+            return moment(value).format('YYYY-MM-DD')
+          }
+        },
+        {
+          label: 'Produksi',
+          field: 'produksi_qty',
+          filter: false,
+          sort: true,
+          width: '100px',
+          style: {'text-align': 'right'},
+          type: 'number'
+        }
+      ],
       columnsb: [
         {
           label: 'Tanggal',
@@ -460,6 +493,13 @@ export default {
               return ''
             }
           }
+        },
+        {
+          label: 'Keterangan',
+          field: 'keterangan',
+          filter: false,
+          sort: true,
+          width: '400px'
         }
       ],
       columnsc: [
@@ -665,7 +705,7 @@ export default {
       'getNewSensus',
       'getNewPHtp'
     ]),
-    ...mapState(['tree', 'treeimages', 'pests', 'conditions'])
+    ...mapState(['tree', 'treeimages', 'pests', 'conditions', 'riwayats'])
   },
   methods: {
     goBack () {

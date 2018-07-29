@@ -5,7 +5,7 @@
         <q-icon name="keyboard arrow left" />
       </q-btn>
       <q-toolbar-title>
-        Identifikasi HTP
+        Rekam HPT
       </q-toolbar-title>
       <q-btn flat @click="save()">
         Simpan

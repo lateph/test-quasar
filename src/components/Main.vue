@@ -53,7 +53,7 @@
         </q-side-link>
         <q-side-link item to="/tree/3">
           <q-item-side color="white" icon="zoom in" />
-          <q-item-main label="Identifikasi HPT" sublabel="" />
+          <q-item-main label="Rekam HPT" sublabel="" />
         </q-side-link>
         <q-side-link item to="/tree/4">
           <q-item-side color="white" icon="build" />
@@ -61,7 +61,7 @@
         </q-side-link>
         <q-side-link item to="/tree/5">
           <q-item-side color="white" icon="description" />
-          <q-item-main label="Sensus Kondisi Pohon" sublabel="" />
+          <q-item-main label="Sensus Pohon" sublabel="" />
         </q-side-link>
         <q-side-link to="/schedule" item>
           <q-item-side color="white" icon="schedule" />
