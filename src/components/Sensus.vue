@@ -20,12 +20,15 @@
         :options="getConditionOptions"
         :error="$v.form.kondisi_id.$error"
       />
+      <q-field>
+        <q-input float-label="Keterangan" v-model="form.keterangan" type="textarea" :min-rows="5"  :error="$v.form.keterangan.$error"  />
+      </q-field>
     </div>
   </q-layout>
 </template>
 
 <script>
-import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QOptionGroup, QField, Toast } from 'quasar'
+import { QBtn, QIcon, QLayout, QToolbar, QToolbarTitle, GoBack, QOptionGroup, QField, Toast, QInput } from 'quasar'
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
 
@@ -37,7 +40,8 @@ export default {
     QToolbar,
     QToolbarTitle,
     QOptionGroup,
-    QField
+    QField,
+    QInput
   },
   directives: {
     GoBack
@@ -52,7 +56,8 @@ export default {
       edit: false,
       form: {
         id: 0,
-        kondisi_id: ''
+        kondisi_id: '',
+        keterangan: ''
       }
     }
   },
@@ -65,12 +70,14 @@ export default {
         vm.edit = true
         vm.form.id = to.params.id
         vm.form.kondisi_id = vm.$store.getters.getNewSensusById(to.params.id).kondisi_id
+        vm.form.keterangan = vm.$store.getters.getNewSensusById(to.params.id).keterangan
       }
     })
   },
   validations: {
     form: {
-      kondisi_id: { required }
+      kondisi_id: { required },
+      keterangan: { required }
     }
   },
   methods: {
@@ -86,10 +93,12 @@ export default {
         if (this.edit) {
           this.$store.dispatch('editSensus', {
             local_id: this.form.id,
-            kondisi_id: this.form.kondisi_id
+            kondisi_id: this.form.kondisi_id,
+            keterangan: this.form.keterangan
           })
             .then((response) => {
               this.form.kondisi_id = ''
+              this.form.keterangan = ''
               window.history.back()
             })
             .catch((error) => {
@@ -98,10 +107,12 @@ export default {
         }
         else {
           this.$store.dispatch('addSensus', {
-            kondisi_id: this.form.kondisi_id
+            kondisi_id: this.form.kondisi_id,
+            keterangan: this.form.keterangan
           })
             .then((response) => {
               this.form.kondisi_id = ''
+              this.form.keterangan = ''
               window.history.back()
             })
             .catch(() => {

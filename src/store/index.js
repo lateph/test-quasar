@@ -212,7 +212,8 @@ const actions = {
   loadRiwayatPanen ({ commit, state }, code) {
     return new Promise(async (resolve, reject) => {
       try {
-        const riwayats = await v.$db.riwayats.where({pohon_id: state.tree.id}).toArray()
+        const riwayats = await v.$db.riwayats.where({pohon_id: state.tree.id + ''}).toArray()
+        console.log(riwayats, state.tree.id)
         commit('setRiwayatPanen', riwayats)
         resolve(riwayats)
       }
@@ -488,6 +489,7 @@ const actions = {
         let user = LocalStorage.get.item('user')
         await v.$db.sensuss.add({
           kondisi_id: sensus.kondisi_id,
+          keterangan: sensus.keterangan,
           pohon_id: state.tree.id,
           checked_at: new Date().getTime(),
           created_at: new Date().getTime(),
@@ -600,11 +602,13 @@ const actions = {
         newRows.forEach(row => {
           data[`record[insert][${row.local_id}][treeId]`] = row.pohon_id
           data[`record[insert][${row.local_id}][conditionId]`] = row.kondisi_id
+          data[`record[insert][${row.local_id}][description]`] = row.keterangan
           data[`record[insert][${row.local_id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const updateRows = await v.$db.sensuss.where({flag: 3}).toArray()
         updateRows.forEach(row => {
           data[`record[update][${row.id}][conditionId]`] = row.kondisi_id
+          data[`record[update][${row.id}][description]`] = row.keterangan
           data[`record[update][${row.id}][checkedAt]`] = moment(row.checked_at).format('YYYY-MM-DD HH:mm:ss')
         })
         const deleteRows = await v.$db.sensuss.where({flag: 4}).toArray()

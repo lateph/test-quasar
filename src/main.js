@@ -61,7 +61,7 @@ export default new VueIdb({
     { bloks: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { afdelings: 'code, address, city, createdAt, name, parent, phone, type, updatedAt' },
     { lilits: '++local_id, id, pohon_id, lilit_batang, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
-    { sensuss: '++local_id, id, pohon_id, kondisi_id, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
+    { sensuss: '++local_id, id, pohon_id, kondisi_id, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag, keterangan' },
     { ihtps: '++local_id, id, pohon_id, pestId, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag' },
     { phtps: '++local_id, id, pohon_id, keterangan, karyawanid, checked_at, created_by, created_at, updated_by, updated_at, flag, materialType, materialQuantity, materialUnit, pestId' },
     { trees: 'id, blockCode, blockName, code, companyCode, companyName, divisionCode, divisionName, estateCode, estateName, latitude, longitude, number, plantedAt' },

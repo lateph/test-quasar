@@ -107,7 +107,6 @@
       <q-list separator class="audit-collapsible"  v-if="$route.params.id === '1'">
         <q-collapsible icon="track changes" label="Riwayat Panen" opened>
           <q-data-table :data="riwayats" :config="configa" :columns="columnse">
-            <!-- Custom renderer for "message" column -->
             <div slot="col-message" slot-scope="cell">
               <span class="light-paragraph">{{cell.data}}</span>
             </div>
@@ -372,7 +371,7 @@ export default {
       },
       config3: {
         rowHeight: '40px',
-        responsive: false,
+        responsive: true,
         // selection: 'single',
         pagination: {
           rowsPerPage: 7
@@ -572,6 +571,13 @@ export default {
           format: (value) => {
             return this.$store.getters.textKondisi(value)
           }
+        },
+        {
+          label: 'Keterangan',
+          field: 'keterangan',
+          filter: false,
+          sort: true,
+          width: '400px'
         },
         {
           label: 'Checked At',

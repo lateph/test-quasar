@@ -493,6 +493,7 @@ export default {
             pohon_id: x.treeId,
             kondisi_id: x.conditionId,
             checked_at: x.checkedAt,
+            keterangan: x.description,
             flag: 1
           }
         }))
